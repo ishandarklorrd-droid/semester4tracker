@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Semester 4 Hub</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="LLB Tracker">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/color/192/scale.png">
+
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 15px;
+            padding-top: env(safe-area-inset-top); /* Padding for iPhone notch */
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        h2 {
+            color: #2980b9;
+            margin-top: 30px;
+            background: #eaf2f8;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border-left: 5px solid #2980b9;
+            font-size: 1.2rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            background: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            table-layout: fixed;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            font-size: 0.85rem;
+            vertical-align: middle;
+            word-wrap: break-word;
+        }
+        th {
+            background-color: #34495e;
+            color: white;
+            font-weight: 600;
+            text-align: center;
+        }
+        th:first-child, td:first-child { text-align: left; }
+        
+        .unit-row {
+            background-color: #ecf0f1;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .unit-row:hover { opacity: 0.9; }
+        
+        /* Color Coding Classes */
+        .diff-e { background-color: #d4efdf !important; } /* Soft Green */
+        .diff-m { background-color: #fcf3cf !important; } /* Soft Yellow */
+        .diff-h { background-color: #fadbd8 !important; } /* Soft Red */
+
+        .unit-title::before {
+            content: "▶ ";
+            display: inline-block;
+            width: 18px;
+            font-size: 0.8em;
+            transition: transform 0.2s;
+        }
+        .unit-row.open .unit-title::before { transform: rotate(90deg); }
+        
+        .sub-row {
+            display: none;
+            background-color: #fafbfc;
+        }
+        .sub-row td:first-child {
+            padding-left: 30px;
+            font-size: 0.9em;
+            color: #444;
+            position: relative;
+        }
+        .sub-row td:first-child::before {
+            content: "☐";
+            position: absolute;
+            left: 12px;
+            color: #999;
+            font-size: 1.1em;
+        }
+        .sub-row.long-text td:first-child { font-size: 0.8em; line-height: 1.3; }
+        
+        input[type="text"], select {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            background-color: #fff;
+            font-size: 16px; /* Prevents iOS auto-zoom on click */
+        }
+        button {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 8px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+            width: 100%;
+        }
+        button:hover { background-color: #2ecc71; }
+        input[type="checkbox"] { transform: scale(1.3); cursor: pointer; }
+        .center-check { text-align: center; }
+        .file-status-box {
+            background-color: #fff3cd !important; 
+            border-color: #ffeeba !important;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Semester 4 Tracker</h1>
+
+    <h2>Company Law</h2>
+    <table>
+        <tr>
+            <th style="width: 28%;">Main Topic</th>
+            <th style="width: 8%;">Read</th>
+            <th style="width: 8%;">Case</th>
+            <th style="width: 8%;">Rev</th>
+            <th style="width: 14%;">Diff</th>
+            <th style="width: 20%;">Remarks</th>
+            <th style="width: 14%;">Action</th>
+        </tr>
+        
+        <tr class="unit-row" onclick="toggleSubRows('comp-u1', this)">
+            <td class="unit-title">Unit 1: Formation</td>
+            <td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td>
+            <td><select id="diff-comp-u1" onclick="event.stopPropagation()" onchange="updateRowColor(this)"><option value="">-</option><option value="E">E</option><option value="M">M</option><option value="H">H</option></select></td>
+            <td><input type="text" placeholder="..." onclick="event.stopPropagation()"></td>
+            <td><button onclick="scheduleRevision(event, 'Company Law: Unit 1', 'diff-comp-u1')">Sync</button></td>
+        </tr>
+        <tr class="sub-row comp-u1"><td>History, Nature & Kinds of Companies</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row comp-u1"><td>Corporate Personality & Veil</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row comp-u1"><td>Promoters & Pre-Inc Contracts</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row comp-u1"><td>MoA, AoA & Indoor Management</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row comp-u1"><td>Prospectus & Membership</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+
+        <tr class="unit-row" onclick="toggleSubRows('comp-u2', this)">
+            <td class="unit-title">Unit 2: Corporate Capital</td>
+            <td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td>
+            <td><select id="diff-comp-u2" onclick="event.stopPropagation()" onchange="updateRowColor(this)"><option value="">-</option><option value="E">E</option><option value="M">M</option><option value="H">H</option></select></td>
+            <td><input type="text" placeholder="..." onclick="event.stopPropagation()"></td>
+            <td><button onclick="scheduleRevision(event, 'Company Law: Unit 2', 'diff-comp-u2')">Sync</button></td>
+        </tr>
+        <tr class="sub-row comp-u2"><td>Share, Capital & Kinds</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row comp-u2"><td>Issuance & Allotment</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row comp-u2"><td>Alteration & Reduction</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+
+        <tr class="unit-row" onclick="toggleSubRows('comp-u3', this)">
+            <td class="unit-title">Unit 3: Management</td>
+            <td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td>
+            <td><select id="diff-comp-u3" onclick="event.stopPropagation()" onchange="updateRowColor(this)"><option value="">-</option><option value="E">E</option><option value="M">M</option><option value="H">H</option></select></td>
+            <td><input type="text" placeholder="..." onclick="event.stopPropagation()"></td>
+            <td><button onclick="scheduleRevision(event, 'Company Law: Unit 3', 'diff-comp-u3')">Sync</button></td>
+        </tr>
+        <tr class="sub-row comp-u3"><td>Organs, Meetings & Resolutions</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row comp-u3"><td>Directors: Appt & Position</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row comp-u3"><td>Oppression & Mismanagement</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row comp-u3"><td>Reconstruction & NCLT</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+
+        <tr class="unit-row" onclick="toggleSubRows('comp-u4', this)">
+            <td class="unit-title">Unit 4: Winding Up</td>
+            <td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td>
+            <td><select id="diff-comp-u4" onclick="event.stopPropagation()" onchange="updateRowColor(this)"><option value="">-</option><option value="E">E</option><option value="M">M</option><option value="H">H</option></select></td>
+            <td><input type="text" placeholder="..." onclick="event.stopPropagation()"></td>
+            <td><button onclick="scheduleRevision(event, 'Company Law: Unit 4', 'diff-comp-u4')">Sync</button></td>
+        </tr>
+        <tr class="sub-row comp-u4"><td>Modes of Winding Up</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row comp-u4"><td>Official Liquidator Powers</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+    </table>
+
+    <h2>Labour & Industrial Law</h2>
+    <table>
+        <tr><th style="width: 28%;">Main Topic</th><th style="width: 8%;">Read</th><th style="width: 8%;">Case</th><th style="width: 8%;">Rev</th><th style="width: 14%;">Diff</th><th style="width: 20%;">Remarks</th><th style="width: 14%;">Action</th></tr>
+        
+        <tr class="unit-row" onclick="toggleSubRows('lab-u1', this)">
+            <td class="unit-title">Unit 1: Evolution</td>
+            <td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td>
+            <td><select id="diff-lab-u1" onclick="event.stopPropagation()" onchange="updateRowColor(this)"><option value="">-</option><option value="E">E</option><option value="M">M</option><option value="H">H</option></select></td>
+            <td><input type="text" placeholder="..." onclick="event.stopPropagation()"></td>
+            <td><button onclick="scheduleRevision(event, 'Labour Law: Unit 1', 'diff-lab-u1')">Sync</button></td>
+        </tr>
+        <tr class="sub-row lab-u1"><td>Evolution in India</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+
+        <tr class="unit-row" onclick="toggleSubRows('lab-u2', this)">
+            <td class="unit-title">Unit 2: ID Act 1947</td>
+            <td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td>
+            <td><select id="diff-lab-u2" onclick="event.stopPropagation()" onchange="updateRowColor(this)"><option value="">-</option><option value="E">E</option><option value="M">M</option><option value="H">H</option></select></td>
+            <td><input type="text" placeholder="..." onclick="event.stopPropagation()"></td>
+            <td><button onclick="scheduleRevision(event, 'Labour Law: Unit 2', 'diff-lab-u2')">Sync</button></td>
+        </tr>
+        <tr class="sub-row lab-u2"><td>Concepts: Industry & Workman</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row lab-u2"><td>Grievance Machinery</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row lab-u2"><td>Strike & Lock-Out</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row lab-u2"><td>Retrenchment & Closure</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+
+        <tr class="unit-row" onclick="toggleSubRows('lab-u3', this)">
+            <td class="unit-title">Unit 3: TU Act 1926</td>
+            <td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td>
+            <td><select id="diff-lab-u3" onclick="event.stopPropagation()" onchange="updateRowColor(this)"><option value="">-</option><option value="E">E</option><option value="M">M</option><option value="H">H</option></select></td>
+            <td><input type="text" placeholder="..." onclick="event.stopPropagation()"></td>
+            <td><button onclick="scheduleRevision(event, 'Labour Law: Unit 3', 'diff-lab-u3')">Sync</button></td>
+        </tr>
+        <tr class="sub-row lab-u3"><td>Growth & Registration</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row lab-u3"><td>Rights & Liabilities</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row lab-u3"><td>Collective Bargaining</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+
+        <tr class="unit-row" onclick="toggleSubRows('lab-u4', this)">
+            <td class="unit-title">Unit 4: Misc Acts</td>
+            <td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td>
+            <td><select id="diff-lab-u4" onclick="event.stopPropagation()" onchange="updateRowColor(this)"><option value="">-</option><option value="E">E</option><option value="M">M</option><option value="H">H</option></select></td>
+            <td><input type="text" placeholder="..." onclick="event.stopPropagation()"></td>
+            <td><button onclick="scheduleRevision(event, 'Labour Law: Unit 4', 'diff-lab-u4')">Sync</button></td>
+        </tr>
+        <tr class="sub-row lab-u4"><td>Payment of Wages Act 1936</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row lab-u4"><td>Workmen Comp 1923</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row lab-u4"><td>EPF 1991 & Maternity 1961</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+    </table>
+
+    <h2>Environmental Law</h2>
+    <table>
+        <tr><th style="width: 28%;">Main Topic</th><th style="width: 8%;">Read</th><th style="width: 8%;">Case</th><th style="width: 8%;">Rev</th><th style="width: 14%;">Diff</th><th style="width: 20%;">Remarks</th><th style="width: 14%;">Action</th></tr>
+        
+        <tr class="unit-row" onclick="toggleSubRows('env-u1', this)">
+            <td class="unit-title">Unit 1: Fundamentals</td>
+            <td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td>
+            <td><select id="diff-env-u1" onclick="event.stopPropagation()" onchange="updateRowColor(this)"><option value="">-</option><option value="E">E</option><option value="M">M</option><option value="H">H</option></select></td>
+            <td><input type="text" placeholder="..." onclick="event.stopPropagation()"></td>
+            <td><button onclick="scheduleRevision(event, 'Env Law: Unit 1', 'diff-env-u1')">Sync</button></td>
+        </tr>
+        <tr class="sub-row env-u1"><td>Definition & Kinds</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row env-u1"><td>Ancient Indian Philosophy</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+
+        <tr class="unit-row" onclick="toggleSubRows('env-u2', this)">
+            <td class="unit-title">Unit 2: Constitution</td>
+            <td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td>
+            <td><select id="diff-env-u2" onclick="event.stopPropagation()" onchange="updateRowColor(this)"><option value="">-</option><option value="E">E</option><option value="M">M</option><option value="H">H</option></select></td>
+            <td><input type="text" placeholder="..." onclick="event.stopPropagation()"></td>
+            <td><button onclick="scheduleRevision(event, 'Env Law: Unit 2', 'diff-env-u2')">Sync</button></td>
+        </tr>
+        <tr class="sub-row env-u2"><td>Constitutional Provisions</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row env-u2"><td>Environment & PILs</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+
+        <tr class="unit-row" onclick="toggleSubRows('env-u3', this)">
+            <td class="unit-title">Unit 3: Enactments</td>
+            <td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td>
+            <td><select id="diff-env-u3" onclick="event.stopPropagation()" onchange="updateRowColor(this)"><option value="">-</option><option value="E">E</option><option value="M">M</option><option value="H">H</option></select></td>
+            <td><input type="text" placeholder="..." onclick="event.stopPropagation()"></td>
+            <td><button onclick="scheduleRevision(event, 'Env Law: Unit 3', 'diff-env-u3')">Sync</button></td>
+        </tr>
+        <tr class="sub-row env-u3"><td>Env (Protection) Act 1986</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row env-u3"><td>Air & Water Acts</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row env-u3"><td>The Forest Act 1927</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+
+        <tr class="unit-row" onclick="toggleSubRows('env-u4', this)">
+            <td class="unit-title">Unit 4: Principles & NGT</td>
+            <td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td>
+            <td><select id="diff-env-u4" onclick="event.stopPropagation()" onchange="updateRowColor(this)"><option value="">-</option><option value="E">E</option><option value="M">M</option><option value="H">H</option></select></td>
+            <td><input type="text" placeholder="..." onclick="event.stopPropagation()"></td>
+            <td><button onclick="scheduleRevision(event, 'Env Law: Unit 4', 'diff-env-u4')">Sync</button></td>
+        </tr>
+        <tr class="sub-row env-u4"><td>Polluter Pays & Precautionary</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row env-u4"><td>Sustainable Development</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row env-u4"><td>NGT Powers & Functions</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+    </table>
+
+    <h2>Arbitration & ADR</h2>
+    <table>
+        <tr><th style="width: 28%;">Main Topic</th><th style="width: 8%;">Read</th><th style="width: 8%;">Case</th><th style="width: 8%;">Rev</th><th style="width: 14%;">Diff</th><th style="width: 20%;">Remarks</th><th style="width: 14%;">Action</th></tr>
+        
+        <tr class="unit-row" onclick="toggleSubRows('arb-u1', this)">
+            <td class="unit-title">Unit 1: Framework</td>
+            <td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td>
+            <td><select id="diff-arb-u1" onclick="event.stopPropagation()" onchange="updateRowColor(this)"><option value="">-</option><option value="E">E</option><option value="M">M</option><option value="H">H</option></select></td>
+            <td><input type="text" placeholder="..." onclick="event.stopPropagation()"></td>
+            <td><button onclick="scheduleRevision(event, 'ADR: Unit 1', 'diff-arb-u1')">Sync</button></td>
+        </tr>
+        <tr class="sub-row arb-u1"><td>Nature, Scope & Agreement</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row arb-u1"><td>Arbitral Proceedings</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row arb-u1"><td>Making of Award & Appeal</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+
+        <tr class="unit-row" onclick="toggleSubRows('arb-u2', this)">
+            <td class="unit-title">Unit 2: Foreign Awards</td>
+            <td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td>
+            <td><select id="diff-arb-u2" onclick="event.stopPropagation()" onchange="updateRowColor(this)"><option value="">-</option><option value="E">E</option><option value="M">M</option><option value="H">H</option></select></td>
+            <td><input type="text" placeholder="..." onclick="event.stopPropagation()"></td>
+            <td><button onclick="scheduleRevision(event, 'ADR: Unit 2', 'diff-arb-u2')">Sync</button></td>
+        </tr>
+        <tr class="sub-row arb-u2"><td>New York Convention</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row arb-u2"><td>Geneva Convention</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+
+        <tr class="unit-row" onclick="toggleSubRows('arb-u3', this)">
+            <td class="unit-title">Unit 3: Conciliation</td>
+            <td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td>
+            <td><select id="diff-arb-u3" onclick="event.stopPropagation()" onchange="updateRowColor(this)"><option value="">-</option><option value="E">E</option><option value="M">M</option><option value="H">H</option></select></td>
+            <td><input type="text" placeholder="..." onclick="event.stopPropagation()"></td>
+            <td><button onclick="scheduleRevision(event, 'ADR: Unit 3', 'diff-arb-u3')">Sync</button></td>
+        </tr>
+        <tr class="sub-row arb-u3"><td>Scope & Commencement</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row arb-u3"><td>Conciliators Role</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row arb-u3"><td>Settlement & Termination</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+
+        <tr class="unit-row" onclick="toggleSubRows('arb-u4', this)">
+            <td class="unit-title">Unit 4: ADR Systems</td>
+            <td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td>
+            <td><select id="diff-arb-u4" onclick="event.stopPropagation()" onchange="updateRowColor(this)"><option value="">-</option><option value="E">E</option><option value="M">M</option><option value="H">H</option></select></td>
+            <td><input type="text" placeholder="..." onclick="event.stopPropagation()"></td>
+            <td><button onclick="scheduleRevision(event, 'ADR: Unit 4', 'diff-arb-u4')">Sync</button></td>
+        </tr>
+        <tr class="sub-row arb-u4"><td>Objectives & Advantages</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row arb-u4"><td>Mediation, Negotiation, etc.</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row arb-u4"><td>Lok Adalats</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+
+        <tr class="unit-row" onclick="toggleSubRows('arb-u5', this)">
+            <td class="unit-title">Unit 5: Practical</td>
+            <td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td>
+            <td><select id="diff-arb-u5" onclick="event.stopPropagation()" onchange="updateRowColor(this)"><option value="">-</option><option value="E">E</option><option value="M">M</option><option value="H">H</option></select></td>
+            <td><input type="text" class="file-status-box" placeholder="File Status (Max 20 words)..." onclick="event.stopPropagation()"></td>
+            <td><button onclick="scheduleRevision(event, 'ADR: Unit 5', 'diff-arb-u5')">Sync</button></td>
+        </tr>
+        <tr class="sub-row arb-u5 long-text"><td>C1: Alpine Housing Corp Vs. Dhariwal (2023) SCC 65</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row arb-u5 long-text"><td>C2: NTPC Ltd. v. SPML Infra Ltd. 2023 LiveLaw</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row arb-u5 long-text"><td>C3: Larsen Air Conditioning v. UOI 2023 SCC</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row arb-u5 long-text"><td>C4: Arb Agreements & Indian Stamp Act [2023] SCR</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row arb-u5 long-text"><td>C5: Tata Sons Pvt Ltd Vs. Siva Industries (2023)</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row arb-u5 long-text"><td>C6: Gayatri Balasamy v. ISG Novasoft (2025)</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row arb-u5 long-text"><td>C7: Kamal Gupta v. L.R. Builders (2025) INSC</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row arb-u5 long-text"><td>C8: Hindustan Construction Co Vs. NHAI (2024)</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row arb-u5 long-text"><td>C9: Indian Oil Corp Vs. Ganesh Petroleum 2022</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row arb-u5 long-text"><td>C10: Fortuna Skill Mgmt v. Jaina Marketing</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        
+        <tr class="sub-row arb-u5 long-text"><td>Q1. Genesis of Arbitration Act & amendments.</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row arb-u5 long-text"><td>Q2. Doctrine of Komptenz-Kompetenz.</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row arb-u5 long-text"><td>Q3. Enforcement of foreign awards (NY Conv).</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row arb-u5 long-text"><td>Q4. Grounds for recourse against award (Sec 34).</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row arb-u5 long-text"><td>Q5. Conciliator vs Arbitrator role.</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+    </table>
+
+    <h2>Criminology & Penology</h2>
+    <table>
+        <tr><th style="width: 28%;">Main Topic</th><th style="width: 8%;">Read</th><th style="width: 8%;">Case</th><th style="width: 8%;">Rev</th><th style="width: 14%;">Diff</th><th style="width: 20%;">Remarks</th><th style="width: 14%;">Action</th></tr>
+        
+        <tr class="unit-row" onclick="toggleSubRows('crim-u1', this)">
+            <td class="unit-title">Unit 1: Basics</td>
+            <td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td>
+            <td><select id="diff-crim-u1" onclick="event.stopPropagation()" onchange="updateRowColor(this)"><option value="">-</option><option value="E">E</option><option value="M">M</option><option value="H">H</option></select></td>
+            <td><input type="text" placeholder="..." onclick="event.stopPropagation()"></td>
+            <td><button onclick="scheduleRevision(event, 'Criminology: Unit 1', 'diff-crim-u1')">Sync</button></td>
+        </tr>
+        <tr class="sub-row crim-u1"><td>Nature & Scope</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row crim-u1"><td>Schools of Criminology</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+
+        <tr class="unit-row" onclick="toggleSubRows('crim-u2', this)">
+            <td class="unit-title">Unit 2: Causation</td>
+            <td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td>
+            <td><select id="diff-crim-u2" onclick="event.stopPropagation()" onchange="updateRowColor(this)"><option value="">-</option><option value="E">E</option><option value="M">M</option><option value="H">H</option></select></td>
+            <td><input type="text" placeholder="..." onclick="event.stopPropagation()"></td>
+            <td><button onclick="scheduleRevision(event, 'Criminology: Unit 2', 'diff-crim-u2')">Sync</button></td>
+        </tr>
+        <tr class="sub-row crim-u2"><td>Factors in Causation</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row crim-u2"><td>Organized & White Collar Crime</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row crim-u2"><td>Juvenile Delinquency</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+
+        <tr class="unit-row" onclick="toggleSubRows('crim-u3', this)">
+            <td class="unit-title">Unit 3: Penology Basics</td>
+            <td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td>
+            <td><select id="diff-crim-u3" onclick="event.stopPropagation()" onchange="updateRowColor(this)"><option value="">-</option><option value="E">E</option><option value="M">M</option><option value="H">H</option></select></td>
+            <td><input type="text" placeholder="..." onclick="event.stopPropagation()"></td>
+            <td><button onclick="scheduleRevision(event, 'Criminology: Unit 3', 'diff-crim-u3')">Sync</button></td>
+        </tr>
+        <tr class="sub-row crim-u3"><td>Object of Punishment</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row crim-u3"><td>Theories of Punishment</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row crim-u3"><td>Capital Punishment</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+
+        <tr class="unit-row" onclick="toggleSubRows('crim-u4', this)">
+            <td class="unit-title">Unit 4: Prisons</td>
+            <td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td><td class="center-check"><input type="checkbox" onclick="event.stopPropagation()"></td>
+            <td><select id="diff-crim-u4" onclick="event.stopPropagation()" onchange="updateRowColor(this)"><option value="">-</option><option value="E">E</option><option value="M">M</option><option value="H">H</option></select></td>
+            <td><input type="text" placeholder="..." onclick="event.stopPropagation()"></td>
+            <td><button onclick="scheduleRevision(event, 'Criminology: Unit 4', 'diff-crim-u4')">Sync</button></td>
+        </tr>
+        <tr class="sub-row crim-u4"><td>Prison Reform</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row crim-u4"><td>Alternatives to Imprisonment</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+        <tr class="sub-row crim-u4"><td>Probation & Parole</td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td class="center-check"><input type="checkbox"></td><td></td><td><input type="text"></td><td></td></tr>
+    </table>
+
+    <script>
+        // Toggle Sub-Rows for Units
+        function toggleSubRows(className, rowElement) {
+            rowElement.classList.toggle('open');
+            const rows = document.querySelectorAll('.' + className);
+            rows.forEach(row => {
+                row.style.display = row.style.display === 'table-row' ? 'none' : 'table-row';
+            });
+        }
+        
+        // Dynamically update the row color based on difficulty selection
+        function updateRowColor(selectElement) {
+            let row = selectElement.closest('.unit-row');
+            
+            // Remove any existing color classes
+            row.classList.remove('diff-e', 'diff-m', 'diff-h');
+            
+            // Apply new color class if a difficulty is selected
+            let val = selectElement.value;
+            if (val === 'E') {
+                row.classList.add('diff-e');
+            } else if (val === 'M') {
+                row.classList.add('diff-m');
+            } else if (val === 'H') {
+                row.classList.add('diff-h');
+            }
+        }
+
+        // Limit the Remarks box to 20 words (applies only to inputs with the class 'file-status-box')
+        document.querySelectorAll('.file-status-box').forEach(box => {
+            box.addEventListener('input', function() {
+                let words = this.value.trim().split(/\s+/);
+                if (words.length > 20) {
+                    alert('Limit reached! Maximum 20 words allowed for file status.');
+                    this.value = words.slice(0, 20).join(" ");
+                }
+            });
+        });
+
+        // Calculate Calendar Date based on Difficulty
+        function scheduleRevision(event, unitName, diffId) {
+            event.stopPropagation(); // Stop row from collapsing when clicking button
+            
+            const diffSelect = document.getElementById(diffId);
+            const difficulty = diffSelect.value;
+            
+            if(!difficulty) {
+                alert("Please select a difficulty rating (E, M, or H) first.");
+                return;
+            }
+
+            let today = new Date();
+            let targetDate = new Date();
+
+            if (difficulty === 'E') {
+                let dayOfWeek = today.getDay(); 
+                let daysUntilWeekend = 6 - dayOfWeek; 
+                if (daysUntilWeekend <= 0) daysUntilWeekend += 7; 
+                targetDate.setDate(today.getDate() + daysUntilWeekend);
+            } else if (difficulty === 'M') {
+                targetDate.setDate(today.getDate() + 3);
+            } else if (difficulty === 'H') {
+                targetDate.setDate(today.getDate() + 2);
+            }
+
+            let year = targetDate.getFullYear();
+            let month = String(targetDate.getMonth() + 1).padStart(2, '0');
+            let day = String(targetDate.getDate()).padStart(2, '0');
+            let dateStr = `${year}${month}${day}T040000Z/${year}${month}${day}T050000Z`;
+
+            let url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=Revision:+${encodeURIComponent(unitName)}&dates=${dateStr}&details=End+Semester+Tracker+Revision`;
+            
+            window.open(url, '_blank');
+        }
+    </script>
+</body>
+</html>
