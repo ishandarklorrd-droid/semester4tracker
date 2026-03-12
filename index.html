@@ -410,6 +410,48 @@
     </table>
 
     <script>
+        // --- NEW: LocalStorage Integration to Save Data ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const allInputs = document.querySelectorAll('input, select');
+            
+            allInputs.forEach((inputElement, index) => {
+                // Give every input field a unique ID based on its order so the phone can remember it
+                const storageId = inputElement.id || 'saved_field_' + index;
+                inputElement.id = storageId;
+
+                // 1. Load saved data when you open the app
+                const savedValue = localStorage.getItem(storageId);
+                if (savedValue !== null) {
+                    if (inputElement.type === 'checkbox') {
+                        inputElement.checked = (savedValue === 'true');
+                    } else {
+                        inputElement.value = savedValue;
+                    }
+                    
+                    // If it's a difficulty dropdown, restore the row color
+                    if (inputElement.tagName === 'SELECT') {
+                        updateRowColor(inputElement);
+                    }
+                }
+
+                // 2. Save data to your phone instantly whenever you change something
+                inputElement.addEventListener('input', () => {
+                    if (inputElement.type === 'checkbox') {
+                        localStorage.setItem(storageId, inputElement.checked);
+                    } else {
+                        localStorage.setItem(storageId, inputElement.value);
+                    }
+                });
+                inputElement.addEventListener('change', () => {
+                    if (inputElement.type === 'checkbox') {
+                        localStorage.setItem(storageId, inputElement.checked);
+                    } else {
+                        localStorage.setItem(storageId, inputElement.value);
+                    }
+                });
+            });
+        });
+
         // Toggle Sub-Rows for Units
         function toggleSubRows(className, rowElement) {
             rowElement.classList.toggle('open');
