@@ -62,17 +62,18 @@
             color: #2c3e50;
             cursor: pointer;
             user-select: none;
+            touch-action: manipulation; /* Forces mobile to treat as button */
+            -webkit-tap-highlight-color: rgba(0,0,0,0.05);
             transition: background-color 0.2s;
         }
 
-        td.topic-cell:hover {
-            background-color: #f1f3f5;
-        }
+        td.topic-cell:hover { background-color: #f1f3f5; }
 
         .toggle-icon {
             display: inline-block;
             width: 15px;
             color: #3498db;
+            pointer-events: none; /* Prevents icon from stealing the click */
         }
 
         input[type="checkbox"] { transform: scale(1.3); cursor: pointer; }
@@ -89,15 +90,14 @@
             font-weight: bold;
         }
 
-        /* Sub-row styling */
+        /* Sub-row Desktop Styling */
         .sub-row { display: none; background-color: #f8f9fa; }
-        .sub-row.show-sub { display: table-row; }
+        .sub-row.show-sub { display: table-row !important; }
         .sub-list { list-style-type: none; padding-left: 30px; margin: 10px 0; text-align: left; }
         .sub-list li { margin-bottom: 10px; }
         .sub-list label { cursor: pointer; color: #2c3e50; display: flex; align-items: center; }
         .sub-list input { margin-right: 12px; transform: scale(1.1); }
 
-        /* Background Colors */
         .bg-green { background-color: var(--green-easy) !important; }
         .bg-yellow { background-color: var(--yellow-med) !important; }
         .bg-red { background-color: var(--red-hard) !important; }
@@ -127,7 +127,6 @@
             }
             td:last-child { border-bottom: none; }
             
-            /* Labels generated dynamically */
             td:before {
                 content: attr(data-label);
                 font-weight: 600;
@@ -147,20 +146,18 @@
             td.topic-cell:before { display: none; }
             input[type="text"] { width: 60%; }
 
-            /* Mobile sub-row integration */
+            /* Sub-row Mobile overrides */
             .sub-row.show-sub { 
-                display: block; 
+                display: block !important; 
                 margin-top: -16px; 
                 margin-bottom: 15px;
                 border: 1px solid #dee2e6;
                 border-top: none;
                 border-radius: 0 0 8px 8px;
                 padding: 0 10px;
+                background-color: #f8f9fa;
             }
-            td.sub-cell {
-                display: block;
-                padding: 15px 5px;
-            }
+            td.sub-cell { display: block; padding: 15px 5px; }
             td.sub-cell:before { display: none; }
         }
     </style>
@@ -238,19 +235,6 @@
             ]
         };
 
-        function toggleSub(rowId) {
-            const subRow = document.getElementById(`${rowId}-sub`);
-            const icon = document.getElementById(`${rowId}-icon`);
-            
-            subRow.classList.toggle('show-sub');
-            
-            if (subRow.classList.contains('show-sub')) {
-                icon.innerText = '▼';
-            } else {
-                icon.innerText = '▶';
-            }
-        }
-
         function renderTables() {
             for (const [tableId, units] of Object.entries(subjectsData)) {
                 const tbody = document.querySelector(`#${tableId} tbody`);
@@ -259,11 +243,11 @@
                 units.forEach((unitObj, index) => {
                     const rowId = `${tableId}-u${index}`;
                     
-                    // Main Row HTML
+                    // Main Row HTML (Notice: No inline onclick here anymore)
                     const trMain = document.createElement('tr');
                     trMain.className = 'main-row';
                     trMain.innerHTML = `
-                        <td class="topic-cell" data-label="Topic" onclick="toggleSub('${rowId}')">
+                        <td class="topic-cell" data-label="Topic" data-rowid="${rowId}">
                             <span id="${rowId}-icon" class="toggle-icon">▶</span> ${unitObj.title}
                         </td>
                         <td data-label="Read"><input type="checkbox" id="${rowId}-read" onchange="saveData()"></td>
@@ -306,15 +290,30 @@
             }
         }
 
+        // --- NEW: Bulletproof Event Delegation for the Accordion ---
+        document.addEventListener('click', function(e) {
+            const topicCell = e.target.closest('.topic-cell');
+            if (topicCell) {
+                const rowId = topicCell.getAttribute('data-rowid');
+                const subRow = document.getElementById(`${rowId}-sub`);
+                const icon = document.getElementById(`${rowId}-icon`);
+                
+                if (subRow && icon) {
+                    subRow.classList.toggle('show-sub');
+                    icon.innerText = subRow.classList.contains('show-sub') ? '▼' : '▶';
+                }
+            }
+        });
+
         function updateColor(selectElement) {
             const row = selectElement.closest('tr.main-row');
-            const val = selectElement.value;
-            
-            row.classList.remove('bg-green', 'bg-yellow', 'bg-red');
-            
-            if (val === '1') row.classList.add('bg-green');
-            else if (val === '2') row.classList.add('bg-yellow');
-            else if (val === '3') row.classList.add('bg-red');
+            if(row) {
+                row.classList.remove('bg-green', 'bg-yellow', 'bg-red');
+                const val = selectElement.value;
+                if (val === '1') row.classList.add('bg-green');
+                else if (val === '2') row.classList.add('bg-yellow');
+                else if (val === '3') row.classList.add('bg-red');
+            }
         }
 
         function saveData() {
