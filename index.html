@@ -60,6 +60,19 @@
             text-align: left;
             font-weight: 600;
             color: #2c3e50;
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.2s;
+        }
+
+        td.topic-cell:hover {
+            background-color: #f1f3f5;
+        }
+
+        .toggle-icon {
+            display: inline-block;
+            width: 15px;
+            color: #3498db;
         }
 
         input[type="checkbox"] { transform: scale(1.3); cursor: pointer; }
@@ -76,14 +89,25 @@
             font-weight: bold;
         }
 
+        /* Sub-row styling */
+        .sub-row { display: none; background-color: #f8f9fa; }
+        .sub-row.show-sub { display: table-row; }
+        .sub-list { list-style-type: none; padding-left: 30px; margin: 10px 0; text-align: left; }
+        .sub-list li { margin-bottom: 10px; }
+        .sub-list label { cursor: pointer; color: #2c3e50; display: flex; align-items: center; }
+        .sub-list input { margin-right: 12px; transform: scale(1.1); }
+
+        /* Background Colors */
         .bg-green { background-color: var(--green-easy) !important; }
         .bg-yellow { background-color: var(--yellow-med) !important; }
         .bg-red { background-color: var(--red-hard) !important; }
 
+        /* --- MOBILE CARD LAYOUT --- */
         @media (max-width: 768px) {
             table, thead, tbody, th, td, tr { display: block; }
             thead tr { display: none; }
-            tr {
+            
+            tr.main-row {
                 margin-bottom: 15px;
                 border: 1px solid #dee2e6;
                 border-radius: 8px;
@@ -91,6 +115,7 @@
                 padding: 10px;
                 box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             }
+
             td {
                 display: flex;
                 justify-content: space-between;
@@ -101,6 +126,8 @@
                 text-align: right;
             }
             td:last-child { border-bottom: none; }
+            
+            /* Labels generated dynamically */
             td:before {
                 content: attr(data-label);
                 font-weight: 600;
@@ -108,6 +135,7 @@
                 flex-basis: 40%;
                 text-align: left;
             }
+            
             td.topic-cell {
                 justify-content: flex-start;
                 font-size: 1.1em;
@@ -118,6 +146,22 @@
             }
             td.topic-cell:before { display: none; }
             input[type="text"] { width: 60%; }
+
+            /* Mobile sub-row integration */
+            .sub-row.show-sub { 
+                display: block; 
+                margin-top: -16px; 
+                margin-bottom: 15px;
+                border: 1px solid #dee2e6;
+                border-top: none;
+                border-radius: 0 0 8px 8px;
+                padding: 0 10px;
+            }
+            td.sub-cell {
+                display: block;
+                padding: 15px 5px;
+            }
+            td.sub-cell:before { display: none; }
         }
     </style>
 </head>
@@ -143,7 +187,7 @@
         <tbody></tbody>
     </table>
 
-    <h2>Criminology</h2>
+    <h2>Criminology & Penology</h2>
     <table id="criminology">
         <thead><tr><th>Main Topic</th><th>Read</th><th>Case</th><th>Rev</th><th>Diff</th><th>Remarks</th><th>Action</th></tr></thead>
         <tbody></tbody>
@@ -158,39 +202,70 @@
     <script>
         const subjectsData = {
             'company-law': [
-                'Unit 1: Formation', 'Unit 2: Corporate Capital', 
-                'Unit 3: Management', 'Unit 4: Winding Up'
+                { title: 'Unit 1: Formation', subs: ['Meaning & Nature of Company', 'Incorporation Process', 'Memorandum & Articles of Association'] },
+                { title: 'Unit 2: Corporate Capital', subs: ['Prospectus', 'Shares & Share Capital', 'Dividends', 'Debentures'] },
+                { title: 'Unit 3: Management', subs: ['Directors: Appointment & Duties', 'Meetings: Types & Procedure', 'Prevention of Oppression & Mismanagement'] },
+                { title: 'Unit 4: Winding Up', subs: ['Modes of Winding Up', 'Liquidator Powers', 'Consequences of Winding Up'] }
             ],
             'labour-law': [
-                'Unit 1: Evolution', 'Unit 2: ID Act 1947', 
-                'Unit 3: Trade Unions', 'Unit 4: Wages'
+                { title: 'Unit 1: Evolution', subs: ['Historical Development', 'Constitutional Perspectives of Labour Laws'] },
+                { title: 'Unit 2: ID Act 1947', subs: ['Industry & Industrial Dispute Definitions', 'Workmen under ID Act', 'Strikes & Lockouts', 'Retrenchment & Closure'] },
+                { title: 'Unit 3: Trade Unions', subs: ['Registration of Trade Unions', 'Rights & Liabilities', 'Immunities of Registered Trade Unions'] },
+                { title: 'Unit 4: Wages', subs: ['Minimum Wages Act 1948', 'Payment of Wages Act 1936'] }
             ],
             'environment-law': [
-                'Unit 1: Intro to Environment Law', 'Unit 2: Protection Laws', 
-                'Unit 3: International Environmental Law', 'Unit 4: Emerging Issues'
+                { title: 'Unit 1: Intro to Environment Law', subs: ['Meaning & Concept', 'Environment Protection Act 1986', 'Constitutional Provisions'] },
+                { title: 'Unit 2: Protection Laws', subs: ['Water Act', 'Air Act', 'Wildlife Protection Act 1972'] },
+                { title: 'Unit 3: International Environmental Law', subs: ['Stockholm Declaration', 'Rio Declaration', 'Kyoto Protocol'] },
+                { title: 'Unit 4: Emerging Issues', subs: ['Climate Change', 'E-Waste Management', 'National Green Tribunal (NGT) Act'] }
             ],
             'criminology': [
-                'Unit 1: Basics of Criminology', 'Unit 2: Schools of Criminology', 
-                'Unit 3: Penology', 'Unit 4: Victimology'
+                { title: 'Unit 1: Basics of Criminology', subs: ['Concept, Nature & Scope', 'Crime & Morality', 'Criminology vs. Criminal Law'] },
+                { title: 'Unit 2: Schools of Criminology', subs: ['Classical School', 'Positivist School', 'Sociological School'] },
+                { title: 'Unit 3: Penology', subs: ['Theories of Punishment', 'Capital Punishment', 'Prison Reforms'] },
+                { title: 'Unit 4: Victimology', subs: ['Concept of Victimology', 'Rights of Victims', 'Victim Compensation Schemes'] }
             ],
             'arbitration': [
-                'Unit 1: General Provisions', 'Unit 2: Arbitral Tribunal', 
-                'Unit 3: Award', 'Unit 4: Conciliation', 
-                'Unit 5: File Status (10 Cases, 5 Qs)' 
+                { title: 'Unit 1: General Provisions', subs: ['Definitions & Scope', 'Arbitration Agreement'] },
+                { title: 'Unit 2: Arbitral Tribunal', subs: ['Composition of Tribunal', 'Jurisdiction', 'Conduct of Arbitral Proceedings'] },
+                { title: 'Unit 3: Award', subs: ['Making of Arbitral Award', 'Recourse against Award', 'Enforcement of Award'] },
+                { title: 'Unit 4: Conciliation', subs: ['Appointment of Conciliators', 'Procedure', 'Settlement Agreement'] },
+                { title: 'Unit 5: File Status', subs: [
+                    'Case 1', 'Case 2', 'Case 3', 'Case 4', 'Case 5', 
+                    'Case 6', 'Case 7', 'Case 8', 'Case 9', 'Case 10',
+                    'Question 1', 'Question 2', 'Question 3', 'Question 4', 'Question 5'
+                ] }
             ]
         };
+
+        function toggleSub(rowId) {
+            const subRow = document.getElementById(`${rowId}-sub`);
+            const icon = document.getElementById(`${rowId}-icon`);
+            
+            subRow.classList.toggle('show-sub');
+            
+            if (subRow.classList.contains('show-sub')) {
+                icon.innerText = '▼';
+            } else {
+                icon.innerText = '▶';
+            }
+        }
 
         function renderTables() {
             for (const [tableId, units] of Object.entries(subjectsData)) {
                 const tbody = document.querySelector(`#${tableId} tbody`);
                 if (!tbody) continue;
 
-                units.forEach((unit, index) => {
+                units.forEach((unitObj, index) => {
                     const rowId = `${tableId}-u${index}`;
-                    const tr = document.createElement('tr');
                     
-                    tr.innerHTML = `
-                        <td class="topic-cell" data-label="Topic">▶ ${unit}</td>
+                    // Main Row HTML
+                    const trMain = document.createElement('tr');
+                    trMain.className = 'main-row';
+                    trMain.innerHTML = `
+                        <td class="topic-cell" data-label="Topic" onclick="toggleSub('${rowId}')">
+                            <span id="${rowId}-icon" class="toggle-icon">▶</span> ${unitObj.title}
+                        </td>
                         <td data-label="Read"><input type="checkbox" id="${rowId}-read" onchange="saveData()"></td>
                         <td data-label="Case"><input type="checkbox" id="${rowId}-case" onchange="saveData()"></td>
                         <td data-label="Rev"><input type="checkbox" id="${rowId}-rev" onchange="saveData()"></td>
@@ -203,15 +278,36 @@
                             </select>
                         </td>
                         <td data-label="Remarks"><input type="text" id="${rowId}-remarks" placeholder="..." oninput="saveData()"></td>
-                        <td data-label="Action"><button class="sync-btn" onclick="syncCalendar('${unit}')">Sync</button></td>
+                        <td data-label="Action"><button class="sync-btn" onclick="syncCalendar('${unitObj.title}')">Sync</button></td>
                     `;
-                    tbody.appendChild(tr);
+                    tbody.appendChild(trMain);
+
+                    // Sub-topics Row HTML
+                    const trSub = document.createElement('tr');
+                    trSub.id = `${rowId}-sub`;
+                    trSub.className = 'sub-row';
+                    
+                    let subHtml = `<td colspan="7" class="sub-cell"><ul class="sub-list">`;
+                    unitObj.subs.forEach((sub, sIndex) => {
+                        const subId = `${rowId}-s${sIndex}`;
+                        subHtml += `
+                            <li>
+                                <label>
+                                    <input type="checkbox" id="${subId}" onchange="saveData()">
+                                    ${sub}
+                                </label>
+                            </li>`;
+                    });
+                    subHtml += `</ul></td>`;
+                    
+                    trSub.innerHTML = subHtml;
+                    tbody.appendChild(trSub);
                 });
             }
         }
 
         function updateColor(selectElement) {
-            const row = selectElement.closest('tr');
+            const row = selectElement.closest('tr.main-row');
             const val = selectElement.value;
             
             row.classList.remove('bg-green', 'bg-yellow', 'bg-red');
