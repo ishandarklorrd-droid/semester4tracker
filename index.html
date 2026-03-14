@@ -15,8 +15,6 @@
         :root {
             --pokedex-red: #dc0a2d;
             --pokedex-dark-red: #8b0000;
-            --screen-bg: #f0f2f5;
-            --lcd-blue: #51adfb;
             --green-easy: #d4edda;
             --yellow-med: #fff3cd;
             --red-hard: #f8d7da;
@@ -29,22 +27,16 @@
             padding: 10px; 
             color: #333;
             border-top: 20px solid var(--pokedex-dark-red);
+            overflow-x: hidden; 
         }
 
         /* --- POKEDEX TOP BAR --- */
         .pokedex-bezel {
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            gap: 15px;
-            margin-bottom: 20px;
+            display: flex; align-items: center; padding: 10px; gap: 15px; margin-bottom: 15px;
         }
         .main-light {
-            width: 50px; height: 50px;
-            background: radial-gradient(circle, #85d7ff, #51adfb);
-            border: 4px solid white;
-            border-radius: 50%;
-            box-shadow: 0 0 15px rgba(255,255,255,0.8);
+            width: 50px; height: 50px; background: radial-gradient(circle, #85d7ff, #51adfb);
+            border: 4px solid white; border-radius: 50%; box-shadow: 0 0 15px rgba(255,255,255,0.8);
         }
         .small-lights { display: flex; gap: 5px; }
         .s-light { width: 12px; height: 12px; border-radius: 50%; border: 1px solid #333; }
@@ -52,13 +44,38 @@
 
         /* --- LCD SCREEN WRAPPER --- */
         .pokedex-screen {
-            background: #dedede;
-            padding: 15px;
-            border-radius: 10px 10px 10px 40px; /* Classic corner cut */
+            position: relative;
+            background-color: #041424; 
+            padding: 15px 10px;
+            border-radius: 10px 10px 10px 40px; 
             border: 15px solid #232323;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.9);
             min-height: 80vh;
+            color: white;
+            overflow: hidden; 
         }
+
+        /* --- THE HOLOGRAPHIC DATA WAVES --- */
+        .data-waves {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 0;
+            pointer-events: none; 
+            background-image: 
+                repeating-linear-gradient(to bottom, rgba(81, 173, 251, 0.1) 0px, rgba(81, 173, 251, 0.1) 2px, transparent 2px, transparent 4px),
+                linear-gradient(to bottom, transparent 0%, rgba(81, 173, 251, 0.4) 50%, transparent 100%),
+                linear-gradient(135deg, #041424 0%, rgba(20, 85, 120, 0.9) 50%, #041424 100%);
+            background-size: 100% 4px, 100% 200%, 200% 200%;
+            animation: digitalFlow 6s linear infinite;
+        }
+
+        @keyframes digitalFlow {
+            0% { background-position: 0 0, 0 -200%, 0% 50%; }
+            50% { background-position: 0 100px, 0 0%, 100% 50%; }
+            100% { background-position: 0 200px, 0 200%, 0% 50%; }
+        }
+
+        .content-layer { position: relative; z-index: 1; }
 
         /* --- TRAINER ID CARD --- */
         #trainer-card-overlay {
@@ -68,7 +85,7 @@
         .trainer-card {
             background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
             width: 90%; max-width: 400px; border-radius: 20px; padding: 20px; color: white;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 4px solid #fff; position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 4px solid #fff;
         }
         .trainer-header { display: flex; gap: 15px; align-items: center; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 15px; }
         .ash-photo { width: 80px; height: 80px; border-radius: 10px; background: white; border: 3px solid #333; overflow: hidden; }
@@ -77,75 +94,126 @@
         .party-member { background: rgba(255,255,255,0.2); padding: 8px; border-radius: 8px; text-align: center; font-size: 10px; cursor: pointer; transition: 0.2s; }
         
         .profile-trigger {
-            position: fixed; top: 20px; right: 20px; width: 55px; height: 55px; 
+            position: absolute; top: 15px; right: 15px; width: 55px; height: 55px; 
             background: white; border-radius: 50%; border: 4px solid #232323;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; z-index: 1500; overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5); cursor: pointer; z-index: 1500; overflow: hidden;
         }
         .profile-trigger img { width: 100%; height: 100%; object-fit: cover; }
 
         /* --- ACTION BUTTONS --- */
-        .header-actions { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; }
+        h1 { text-align:center; margin-top:0; font-size: 1.4rem; color: #85d7ff; letter-spacing: 1px; text-shadow: 0 0 8px rgba(81, 173, 251, 0.8); margin-right: 50px; }
+        .header-actions { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; }
         .action-btn { 
-            padding: 10px 15px; border-radius: 25px; border: 2px solid #232323; 
-            color: white; font-weight: bold; font-size: 11px; cursor: pointer;
-            box-shadow: 0 4px 0 #232323; transform: translateY(-2px);
+            padding: 8px 15px; border-radius: 25px; border: 2px solid #51adfb; 
+            background: rgba(0,0,0,0.6); color: #51adfb; font-weight: bold; font-size: 11px; cursor: pointer;
+            box-shadow: 0 0 10px rgba(81, 173, 251, 0.3); transition: 0.2s;
         }
-        .action-btn:active { transform: translateY(0); box-shadow: none; }
-        .export-btn { background: #3498db; }
-        .import-btn { background: #f39c12; }
+        .action-btn:active { transform: scale(0.95); }
 
-        /* --- SUBJECT CONTAINERS --- */
+        .swipe-hint {
+            text-align: center; font-size: 0.75rem; color: #85d7ff; opacity: 0.7;
+            margin-bottom: 10px; font-weight: bold; letter-spacing: 2px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 1; text-shadow: 0 0 8px #51adfb; } 100% { opacity: 0.3; } }
+
+        /* --- HORIZONTAL SCROLL SNAP CONTAINER --- */
+        #app-container {
+            display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch; gap: 15px; padding-bottom: 10px;
+        }
+        #app-container::-webkit-scrollbar { display: none; }
+
+        /* --- SUBJECT CONTAINERS (ULTRA iOS GLASS) --- */
         .subject-container { 
-            margin-bottom: 25px; background: #fff; border-radius: 8px; 
-            overflow: hidden; border: 3px solid #232323; 
+            flex: 0 0 100%; 
+            scroll-snap-align: center;
+            background: rgba(255, 255, 255, 0.1); 
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 8px; 
+            overflow: hidden; 
+            border: 1px solid rgba(81, 173, 251, 0.5); 
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
         }
-        .pokemon-header { display: flex; align-items: center; padding: 15px; color: white; gap: 15px; }
+        .pokemon-header { display: flex; align-items: center; padding: 15px; color: white; gap: 15px; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
         
-        /* Subject Types */
-        .type-fire { background: #F08030; }
-        .type-fighting { background: #3498db; }
-        .type-dragon { background: #7038F8; }
-        .type-steel { background: #B8B8D0; }
-        .type-dark { background: #705848; }
+        .type-fire { background: linear-gradient(135deg, #F08030, #f9d423); }
+        .type-fighting { background: linear-gradient(135deg, #3498db, #2c3e50); }
+        .type-dragon { background: linear-gradient(135deg, #7038F8, #4b6cb7); }
+        .type-steel { background: linear-gradient(135deg, #B8B8D0, #737373); }
+        .type-dark { background: linear-gradient(135deg, #705848, #232526); }
 
-        .sprite-box { width: 70px; height: 70px; background: rgba(0,0,0,0.1); border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid rgba(255,255,255,0.4); }
+        .sprite-box { width: 70px; height: 70px; background: rgba(0,0,0,0.2); border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid rgba(255,255,255,0.4); box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
         .sprite-box img { max-width: 55px; image-rendering: pixelated; }
 
-        .xp-container { background: #232323; height: 12px; border-radius: 6px; margin-top: 8px; border: 2px solid #fff; }
-        .xp-bar { height: 100%; background: #50ff50; width: 0%; transition: width 0.5s; }
+        .xp-container { background: rgba(0,0,0,0.5); height: 12px; border-radius: 6px; margin-top: 8px; border: 1px solid rgba(255,255,255,0.5); }
+        .xp-bar { height: 100%; background: linear-gradient(90deg, #4cd137, #8cff7a); width: 0%; transition: width 0.5s; box-shadow: 0 0 8px #4cd137; }
 
-        table { width: 100%; border-collapse: collapse; background: white; }
-        th, td { padding: 12px; text-align: center; border-bottom: 1px solid #eee; }
-        th { background: #444; color: #fff; font-size: 0.65rem; }
+        /* --- TABLE STYLING --- */
+        table { width: 100%; border-collapse: collapse; background: transparent; }
+        th { background: rgba(0,0,0,0.8); color: #fff; font-size: 0.65rem; text-transform: uppercase; padding: 12px; text-align: center; border-bottom: 2px solid #000; }
+        td { padding: 12px; text-align: center; }
         
-        .topic-cell { text-align: left; cursor: pointer; font-weight: bold; color: #232323; }
-        .bg-green { background-color: var(--green-easy) !important; }
-        .bg-yellow { background-color: var(--yellow-med) !important; }
-        .bg-red { background-color: var(--red-hard) !important; }
+        /* The Unit Headings (Glassy with Black Border) */
+        tr.main-row { 
+            background: rgba(0, 0, 0, 0.3); /* Smoky glass transparency */
+            border: 2px solid #000000; /* Solid Black Border */
+        }
+        tr.main-row td { color: #ffffff; font-weight: bold; text-shadow: 1px 1px 4px rgba(0,0,0,0.9); }
+        .topic-cell { text-align: left; cursor: pointer; color: #ffffff !important; }
 
-        .sub-row { display: none; background: #f0f0f0; }
+        /* Status Colors */
+        .bg-green { background-color: rgba(40, 167, 69, 0.8) !important; }
+        .bg-yellow { background-color: rgba(255, 193, 7, 0.8) !important; color: #000 !important; }
+        .bg-red { background-color: rgba(220, 53, 69, 0.8) !important; }
+
+        /* The Transparent Sub-Topic Area */
+        .sub-row { display: none; background: transparent !important; }
         .show-sub { display: table-row !important; }
-        .sub-list { list-style: none; padding: 15px; margin: 0; }
-        .sub-list label { display: flex; align-items: center; cursor: pointer; font-size: 0.85rem; margin-bottom: 8px; }
+        
+        /* The Light Blue Border Rectangle */
+        .sub-td {
+            border: 2px solid #51adfb !important;
+            border-top: none !important; 
+            background: transparent !important; 
+            box-shadow: inset 0 0 20px rgba(81, 173, 251, 0.15); 
+            padding: 0 !important;
+        }
 
+        .sub-list { list-style: none; padding: 15px 25px; margin: 0; text-align: left; }
+        .sub-list label { 
+            display: flex; align-items: center; cursor: pointer; 
+            font-size: 0.9rem; margin-bottom: 12px; 
+            color: #ffffff; 
+            font-weight: 500;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.9); 
+        }
+
+        input[type="checkbox"] { transform: scale(1.3); cursor: pointer; margin-right: 12px; }
+        select { padding: 6px; border-radius: 5px; border: 1px solid #ccc; background: rgba(255,255,255,0.9); color: #000; }
         input.read-locked { opacity: 0.2; cursor: not-allowed; filter: grayscale(1); }
 
-        .reset-container { text-align: center; margin: 30px 0; }
-        .reset-btn { background: #232323; color: #fff; border: none; padding: 8px 15px; border-radius: 20px; font-size: 10px; cursor: pointer; }
+        .reset-container { text-align: center; margin-top: 20px; }
+        .reset-btn { background: rgba(0,0,0,0.8); color: #85d7ff; border: 1px solid #51adfb; padding: 8px 15px; border-radius: 20px; font-size: 10px; cursor: pointer; box-shadow: 0 0 10px rgba(81, 173, 251, 0.2); }
 
         #evo-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); z-index: 3000; flex-direction: column;
+            background: rgba(4, 20, 36, 0.95); z-index: 3000; flex-direction: column;
             align-items: center; justify-content: center; color: white; text-align: center;
         }
 
         @media (max-width: 768px) {
             table, thead, tbody, th, td, tr { display: block; }
             thead { display: none; }
-            tr.main-row { border-bottom: 2px solid #ddd; padding: 5px 0; }
-            td { display: flex; justify-content: space-between; padding: 10px; align-items: center; }
-            td:before { content: attr(data-label); font-weight: bold; color: #777; font-size: 0.7rem; }
+            tr.main-row { border: 2px solid #000000; padding: 5px 0; background: rgba(0, 0, 0, 0.3); }
+            tr.main-row td { display: flex; justify-content: space-between; padding: 10px; align-items: center; border:none; }
+            tr.main-row td:before { content: attr(data-label); font-weight: bold; color: #85d7ff; font-size: 0.7rem; text-transform: uppercase; text-shadow: none; }
+            td.topic-cell:before { display: none; }
+            
             .sub-row.show-sub { display: block !important; }
+            .sub-td { display: block !important; border-top: 1px dashed rgba(81, 173, 251, 0.5) !important; }
+            .sub-list { padding: 15px; }
         }
     </style>
 </head>
@@ -161,83 +229,94 @@
     </div>
 
     <div class="pokedex-screen">
-        <div class="profile-trigger" onclick="toggleTrainerCard()">
-            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png" alt="Ash">
-        </div>
+        <div class="data-waves"></div>
 
-        <div id="trainer-card-overlay" onclick="toggleTrainerCard()">
-            <div class="trainer-card" onclick="event.stopPropagation()">
-                <div class="trainer-header">
-                    <div class="ash-photo">
-                        <img src="5171636a31a0c84a11a11e99ab3d6340.jpg" alt="Ishan">
+        <div class="content-layer">
+            <div class="profile-trigger" onclick="toggleTrainerCard()">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ40ZUHlV_yT0jGpi6WkMIGidurWU9Tw3TOqw&s" alt="Ishan">
+            </div>
+
+            <div id="trainer-card-overlay" onclick="toggleTrainerCard()">
+                <div class="trainer-card" onclick="event.stopPropagation()">
+                    <div class="trainer-header">
+                        <div class="ash-photo">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ40ZUHlV_yT0jGpi6WkMIGidurWU9Tw3TOqw&s" alt="Ishan">
+                        </div>
+                        <div>
+                            <h3 style="margin:0; letter-spacing:1px;">ISHAN DOBHAL</h3>
+                            <p style="margin:2px 0; font-size:0.8em; opacity:0.9;">LLB (SEM 4)</p>
+                        </div>
                     </div>
-                    <div>
-                        <h3 style="margin:0; letter-spacing:1px;">ISHAN DOBHAL</h3>
-                        <p style="margin:2px 0; font-size:0.8em; opacity:0.9;">LLB (SEM 4)</p>
-                    </div>
+                    <div class="party-grid" id="trainer-party-grid"></div>
+                    <p style="font-size: 10px; text-align: center; margin-top: 15px; opacity: 0.8;">Tap Pokémon to view stats.</p>
                 </div>
-                <div class="party-grid" id="trainer-party-grid"></div>
-                <p style="font-size: 10px; text-align: center; margin-top: 15px; opacity: 0.8;">Tap Pokémon to view stats.</p>
             </div>
-        </div>
 
-        <div id="evo-overlay">
-            <div class="evo-card" style="background:white; color:#333; padding:25px; border-radius:20px; width:80%;">
-                <h2 id="evo-title">Evolution!</h2>
-                <img id="evo-gif" src="" style="width:100px;">
-                <p id="evo-msg"></p>
-                <p id="evo-remind" style="font-weight:bold; color:#e67e22;"></p>
-                <button onclick="closeEvo()" style="padding:10px 20px; background:#27ae60; color:white; border:none; border-radius:5px;">Continue</button>
+            <div id="evo-overlay">
+                <div class="evo-card" style="background:rgba(255,255,255,0.1); backdrop-filter:blur(10px); border:2px solid #51adfb; color:white; padding:25px; border-radius:20px; width:80%; box-shadow: 0 0 30px rgba(81,173,251,0.5);">
+                    <h2 id="evo-title" style="color:#85d7ff; text-shadow:0 0 10px #51adfb;">EVOLUTION!</h2>
+                    <img id="evo-gif" src="" style="width:100px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.5));">
+                    <p id="evo-msg" style="font-weight:bold; letter-spacing:1px;"></p>
+                    <p id="evo-remind" style="font-weight:bold; color:#fdfd00; text-shadow:0 0 5px #fdfd00;"></p>
+                    <button onclick="closeEvo()" style="padding:10px 20px; background:#51adfb; color:#041424; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">Continue</button>
+                </div>
             </div>
-        </div>
 
-        <h1 style="text-align:center; margin-top:0; font-size: 1.5rem; color: #232323; letter-spacing: -1px;">POKEDEX: LLB MODE</h1>
-        
-        <div class="header-actions">
-            <button class="action-btn export-btn" onclick="exportJSON()">EXPORT</button>
-            <button class="action-btn import-btn" onclick="document.getElementById('import-file').click()">IMPORT</button>
-            <input type="file" id="import-file" style="display: none;" accept=".json" onchange="importJSON(event)">
-        </div>
+            <h1>DATA BANK</h1>
+            
+            <div class="header-actions">
+                <button class="action-btn export-btn" onclick="exportJSON()">EXPORT</button>
+                <button class="action-btn import-btn" onclick="document.getElementById('import-file').click()">IMPORT</button>
+                <input type="file" id="import-file" style="display: none;" accept=".json" onchange="importJSON(event)">
+            </div>
+            
+            <div class="swipe-hint">← SWIPE TO NAVIGATE →</div>
 
-        <div id="app-container"></div>
+            <div id="app-container"></div>
 
-        <div class="reset-container">
-            <button class="reset-btn" onclick="resetAll()">CLEAR DATA BANK</button>
+            <div class="reset-container">
+                <button class="reset-btn" onclick="resetAll()">FORMAT SYSTEM MEMORY</button>
+            </div>
         </div>
     </div>
 
     <script>
         const subjectsData = {
-            'company-law': { title: 'Company Law', type: 'fire', pokemon: ['charmander', 'charmeleon', 'charizard', 'charizard-megax'], units: [
-                { title: 'Unit 1: Formation', subs: ['Meaning & Nature', 'Incorporation', 'MOA & AOA'] },
-                { title: 'Unit 2: Corporate Capital', subs: ['Prospectus', 'Shares', 'Dividends'] },
-                { title: 'Unit 3: Management', subs: ['Directors', 'Meetings', 'Oppression'] },
-                { title: 'Unit 4: Winding Up', subs: ['Modes', 'Liquidators', 'Consequences'] }
+            'company-law': { 
+                title: 'Company Law', type: 'fire', pokemon: ['charmander', 'charmeleon', 'charizard', 'charizard-megax'], units: [
+                { title: 'Unit 1: Formation of Companies', subs: ['History of Company Legislation', 'Meaning, Nature, Advantages & Disadvantages', 'Kinds of Companies', 'Corporate Personality & Lifting the Veil', 'Promotion, Promoters & Pre-Incorporation Contracts', 'MOA & AOA (Nature, Contents, Relationship)', 'Objects Clause & Doctrine of Ultra-vires', 'Doctrine of Indoor Management', 'Prospectus & Statement in Lieu', 'Membership (Acquisition & Termination)'] },
+                { title: 'Unit 2: Corporate Capital', subs: ['Share & Share Capital (Meaning, Nature, Kinds)', 'Rights & Duties Attached to Shares', 'Issuance & Allotment of Shares', 'Alteration: Increase & Reduction of Share Capital', 'Pre-Emptive Rights & Variation of Class Rights'] },
+                { title: 'Unit 3: Management & Administration', subs: ['Company Organs & Division of Powers', 'Company Meetings (Types & Valid Conditions)', 'Procedure for Meetings & Resolutions', 'Directors & Managing Director (Appt. & Position)', 'Oppression & Mismanagement (Majority Rule)', 'Investigation into Affairs of Companies', 'Reconstruction & Amalgamation', 'National Company Law Tribunal (NCLT)'] },
+                { title: 'Unit 4: Winding Up', subs: ['Modes of Winding Up', 'Compulsory Winding Up', 'Voluntary Winding Up', 'Official Liquidator & Liquidator (Appt. & Powers)'] }
             ]},
-            'labour-law': { title: 'Labour Law', type: 'fighting', pokemon: ['riolu', 'riolu', 'lucario', 'lucario-mega'], units: [
-                { title: 'Unit 1: Evolution', subs: ['History', 'Constitution'] },
-                { title: 'Unit 2: ID Act', subs: ['Industry Def', 'Strikes', 'Retrenchment'] },
-                { title: 'Unit 3: Trade Unions', subs: ['Registration', 'Rights'] },
-                { title: 'Unit 4: Wages', subs: ['Min Wages', 'Payment Act'] }
+            'labour-law': { 
+                title: 'Labour Law', type: 'fighting', pokemon: ['riolu', 'riolu', 'lucario', 'lucario-mega'], units: [
+                { title: 'Unit 1: Evolution', subs: ['Evolution of Industrial Legislation in India'] },
+                { title: 'Unit 2: Industrial Disputes Act 1947', subs: ['Scope, Object & Main Features', 'Industry Definition', 'Industrial Dispute & Individual Dispute', 'Workman & Employee', 'Authorities & Grievance Redressal Machinery', 'Strike', 'Lock-Out', 'Retrenchment', 'Lay-off', 'Transfer & Closure'] },
+                { title: 'Unit 3: Trade Unions Act 1926', subs: ['Growth of Unions in India', 'Definitions', 'Registration of Trade Unions', 'Rights & Liabilities of Registered Unions', 'Collective Bargaining & Recognition', 'Multiplicity of Unions & Role of Outsiders'] },
+                { title: 'Unit 4: Wages & Compensation Acts', subs: ['Payment of Wages Act 1936', 'Workmen Compensation Act 1923', 'Employees Provident Funds Act 1991', 'Maternity Benefits Act 1961'] }
             ]},
-            'environment-law': { title: 'Environment Law', type: 'dragon', pokemon: ['gible', 'gabite', 'garchomp', 'garchomp-mega'], units: [
-                { title: 'Unit 1: Introduction', subs: ['Concept', 'EPA 1986', 'Constitution'] },
-                { title: 'Unit 2: Specific Acts', subs: ['Water Act', 'Air Act', 'Wildlife Act'] },
-                { title: 'Unit 3: International', subs: ['Stockholm', 'Rio', 'Kyoto'] },
-                { title: 'Unit 4: Emerging', subs: ['Climate Change', 'E-Waste', 'NGT Act'] }
+            'environment-law': { 
+                title: 'Environment Law', type: 'dragon', pokemon: ['gible', 'gabite', 'garchomp', 'garchomp-mega'], units: [
+                { title: 'Unit 1: Introduction', subs: ['Meaning & Definition of Environment & Pollution', 'Kinds, Sources & Consequences of Pollution', 'Ancient Indian Philosophy on Protection'] },
+                { title: 'Unit 2: Constitutional & Penal Provisions', subs: ['Constitutional Provisions on Pollution', 'Provisions under CrPC and IPC', 'Environment and Development', 'Current Environment Problems & PILs'] },
+                { title: 'Unit 3: Protection Regulations & Acts', subs: ['The Environment (Protection) Act 1986', 'The Air (Prevention and Control) Act 1981', 'The Water (Prevention and Control) Act 1974', 'The Forest Act 1927'] },
+                { title: 'Unit 4: Doctrines & Emerging Issues', subs: ['Polluter Pays Principle', 'Precautionary Principle', 'Public Trust Doctrine & Sustainable Development', 'National Green Tribunal (NGT) Cases', 'Powers & Functions of NGT'] }
             ]},
-            'criminology': { title: 'Criminology', type: 'dark', pokemon: ['zorua', 'zorua', 'zoroark', 'zoroark-hisui'], units: [
-                { title: 'Unit 1: Basics', subs: ['Nature/Scope', 'Crime/Morality'] },
-                { title: 'Unit 2: Schools', subs: ['Classical', 'Positivist', 'Sociological'] },
-                { title: 'Unit 3: Penology', subs: ['Theories', 'Capital Punishment', 'Prison Reforms'] },
-                { title: 'Unit 4: Victimology', subs: ['Concept', 'Rights', 'Compensation'] }
+            'criminology': { 
+                title: 'Criminology', type: 'dark', pokemon: ['zorua', 'zorua', 'zoroark', 'zoroark-hisui'], units: [
+                { title: 'Unit 1: Basics of Criminology', subs: ['Definition, Nature & Scope', 'Method of Studying Criminology', 'Schools of Criminology', 'Factors in Causation of Crimes'] },
+                { title: 'Unit 2: Specific Crimes', subs: ['Organized Crime', 'White Collar Crime', 'Socio-Economic Crime', 'Juvenile Delinquency', 'New Dimensions of Criminology'] },
+                { title: 'Unit 3: Penology', subs: ['Concept & Definition of Punishment', 'Concept of Treatment & Object of Punishment', 'Schools of Penology', 'Theories of Punishment'] },
+                { title: 'Unit 4: Punishment & Reforms', subs: ['Capital Punishment', 'Evolution & Development of Prison System', 'Prison Reforms in India', 'Alternatives: Probation, Parole, Open Prison'] }
             ]},
-            'arbitration': { title: 'Arbitration', type: 'steel', pokemon: ['scyther', 'scyther', 'scizor', 'scizor-mega', 'shiny-scizor-mega'], units: [
-                { title: 'Unit 1: Agreement', subs: ['Definitions', 'Agreement Scope'] },
-                { title: 'Unit 2: Tribunal', subs: ['Composition', 'Jurisdiction'] },
-                { title: 'Unit 3: Awards', subs: ['Making Awards', 'Enforcement'] },
-                { title: 'Unit 4: Conciliation', subs: ['Conciliators', 'Procedure'] },
-                { title: 'Unit 5: File Status', subs: ['Case 1-5', 'Case 6-10', 'Questions 1-5'] }
+            'arbitration': { 
+                title: 'Arbitration', type: 'steel', pokemon: ['scyther', 'scyther', 'scizor', 'scizor-mega', 'shiny-scizor-mega'], units: [
+                { title: 'Unit 1: Arbitration', subs: ['Definition, Nature, Scope & Importance', 'Arbitration Agreement & Tribunal Composition', 'Jurisdiction & Conduct of Proceedings', 'Making & Termination of Arbitral Award', 'Recourse, Finality & Enforcement of Awards', 'Appeal and Revision'] },
+                { title: 'Unit 2: Foreign Awards & Conciliation', subs: ['Foreign Awards (New York & Geneva)', 'Conciliation: Application, Scope & Commencement', 'Appointment & Role of Conciliators', 'Settlement Agreement & Termination', 'Costs and Deposits of Conciliation'] },
+                { title: 'Unit 3: Rule-Making & ADR System', subs: ['Rule-Making Powers (High Courts & Central Govt.)', 'ADR System: Development, Meaning, Objective', 'Types of ADR (Mediation, Mini-Trial, Fast Track, etc.)'] },
+                { title: 'Unit 4: Lok Adalats', subs: ['Lok Adalats: Organization & Cognizance', 'Awards and Powers of Lok Adalats', 'Two Cases of Arbitration and Conciliation'] },
+                { title: 'Unit 5: Project File Status', subs: ['Case 1', 'Case 2', 'Case 3', 'Case 4', 'Case 5', 'Case 6', 'Case 7', 'Case 8', 'Case 9', 'Case 10', 'Question 1', 'Question 2', 'Question 3', 'Question 4', 'Question 5'] }
             ]}
         };
 
@@ -280,7 +359,7 @@
                     tbody.appendChild(tr);
                     const subTr = document.createElement('tr');
                     subTr.id = `${rId}-sub`; subTr.className = 'sub-row';
-                    let sHtml = `<td colspan="5"><ul class="sub-list">`;
+                    let sHtml = `<td colspan="5" class="sub-td"><ul class="sub-list">`;
                     u.subs.forEach((s, si) => { sHtml += `<li><label><input type="checkbox" id="${rId}-s${si}" onchange="checkLocks('${subjKey}'); saveData()"> ${s}</label></li>`; });
                     subTr.innerHTML = sHtml + `</ul></td>`;
                     tbody.appendChild(subTr);
@@ -340,7 +419,7 @@
             if (pKey.startsWith('shiny-')) spriteUrl = `https://play.pokemonshowdown.com/sprites/ani-shiny/${pKey.replace('shiny-', '')}.gif`;
 
             document.getElementById('evo-gif').src = spriteUrl;
-            document.getElementById('evo-msg').innerText = `${pKey.toUpperCase()} REGISTERED IN POKEDEX!`;
+            document.getElementById('evo-msg').innerText = `${pKey.replace(/-/g, ' ').toUpperCase()} REGISTERED IN POKEDEX!`;
             document.getElementById('evo-remind').innerText = `REVISE: ${times[diff]}`;
             document.getElementById('evo-overlay').style.display = 'flex';
         }
@@ -390,7 +469,7 @@
                     <div class="party-member" onclick="alert('${subjData.title}: ${reads} units completed')" title="Units Completed: ${reads}">
                         <img src="${sUrl}">
                         <span style="display:block; font-weight:bold;">Lv. ${reads + 1}</span>
-                        <span>${pName.toUpperCase()}</span>
+                        <span>${pName.replace(/-/g, ' ').toUpperCase()}</span>
                     </div>`;
             }
         }
