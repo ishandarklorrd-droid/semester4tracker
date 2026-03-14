@@ -3,422 +3,380 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Semester 4 LLB Tracker</title>
+    <meta name="apple-mobile-web-app-title" content="Poke-LLB">
+    <link rel="apple-touch-icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Pok%C3%A9_Ball_icon.svg/1024px-Pok%C3%A9_Ball_icon.svg.png">
+
+    <title>Poke-LLB Master Tracker</title>
     
     <style>
         :root {
+            --bg-main: #f0f2f5;
             --primary-dark: #2c3e50;
-            --bg-main: #f8f9fa;
+            --pokedex-red: #e74c3c;
             --green-easy: #d4edda;
             --yellow-med: #fff3cd;
             --red-hard: #f8d7da;
         }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg-main);
-            margin: 0;
-            padding: 15px;
-            color: #333;
-        }
-
-        h2 {
-            color: var(--primary-dark);
-            border-left: 5px solid #3498db;
-            padding-left: 10px;
-            margin-top: 30px;
-            background: #e9ecef;
-            padding: 10px;
-            border-radius: 4px;
-        }
-
-        /* Top Action Buttons */
-        .header-actions {
-            text-align: center;
-            margin: 20px 0;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .header-btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 14px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg-main); margin: 0; padding: 15px; color: #333; }
         
-        .export-btn { background-color: #3498db; }
-        .import-btn { background-color: #f39c12; }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
+        /* --- TRAINER ID CARD --- */
+        #trainer-card-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center;
         }
-
-        th, td {
-            padding: 12px;
-            text-align: center;
-            border-bottom: 1px solid #dee2e6;
+        .trainer-card {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            width: 90%; max-width: 400px; border-radius: 20px; padding: 20px; color: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 4px solid #fff; position: relative;
         }
-
-        th {
-            background-color: var(--primary-dark);
-            color: white;
-            font-weight: 500;
-        }
-
-        td.topic-cell {
-            text-align: left;
-            font-weight: 600;
-            color: #2c3e50;
-            cursor: pointer;
-            user-select: none;
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: rgba(0,0,0,0.05);
-            transition: background-color 0.2s;
-        }
-
-        td.topic-cell:hover { background-color: #f1f3f5; }
-
-        .toggle-icon {
-            display: inline-block;
-            width: 15px;
-            color: #3498db;
-            pointer-events: none;
-        }
-
-        input[type="checkbox"] { transform: scale(1.3); cursor: pointer; }
-        input[type="text"] { width: 90%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
-        select { padding: 6px; border-radius: 4px; border: 1px solid #ccc; }
+        .trainer-header { display: flex; gap: 15px; align-items: center; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 15px; }
+        .ash-photo { width: 80px; height: 80px; border-radius: 10px; background: white; border: 3px solid #333; overflow: hidden; }
+        .ash-photo img { width: 100%; height: 100%; object-fit: cover; }
+        .party-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+        .party-member { background: rgba(255,255,255,0.2); padding: 8px; border-radius: 8px; text-align: center; font-size: 10px; cursor: pointer; transition: 0.2s; }
+        .party-member:hover { background: rgba(255,255,255,0.4); }
+        .party-member img { width: 35px; height: 35px; display: block; margin: 0 auto; pointer-events: none; }
         
-        .sync-btn {
-            background: #27ae60;
-            color: white;
-            border: none;
-            padding: 8px 14px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
+        .profile-trigger {
+            position: fixed; top: 15px; right: 15px; width: 50px; height: 50px; 
+            background: white; border-radius: 50%; border: 3px solid var(--pokedex-red);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2); cursor: pointer; z-index: 1500; overflow: hidden;
         }
+        .profile-trigger img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* Sub-row Desktop Styling */
-        .sub-row { display: none; background-color: #f8f9fa; }
-        .sub-row.show-sub { display: table-row !important; }
-        .sub-list { list-style-type: none; padding-left: 30px; margin: 10px 0; text-align: left; }
-        .sub-list li { margin-bottom: 10px; }
-        .sub-list label { cursor: pointer; color: #2c3e50; display: flex; align-items: center; }
-        .sub-list input { margin-right: 12px; transform: scale(1.1); }
+        /* --- UI ELEMENTS --- */
+        .header-actions { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; padding-top: 50px; }
+        .action-btn { padding: 8px 15px; border-radius: 6px; border: none; color: white; font-weight: bold; font-size: 12px; cursor: pointer; }
+        .export-btn { background: #3498db; }
+        .import-btn { background: #f39c12; }
 
+        .subject-container { margin-bottom: 30px; background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .pokemon-header { display: flex; align-items: center; padding: 15px; color: white; gap: 15px; }
+        .type-fire { background: linear-gradient(135deg, #ff4e50, #f9d423); } /* Charizard */
+        .type-fighting { background: linear-gradient(135deg, #0052D4, #4364F7, #6FB1FC); } /* Lucario Blue */
+        .type-dragon { background: linear-gradient(135deg, #4b6cb7, #182848); } /* Garchomp */
+        .type-steel { background: linear-gradient(135deg, #ed213a, #93291e); } /* Scizor Red */
+        .type-dark { background: linear-gradient(135deg, #232526, #414345); } /* Zoroark */
+
+        .sprite-box { width: 75px; height: 75px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; justify-content: center; align-items: center; }
+        .sprite-box img { max-width: 60px; image-rendering: pixelated; }
+
+        .xp-container { background: rgba(0,0,0,0.3); height: 10px; border-radius: 5px; margin-top: 8px; overflow: hidden; }
+        .xp-bar { height: 100%; background: #4cd137; width: 0%; transition: width 0.5s; }
+
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th, td { padding: 12px; text-align: center; border-bottom: 1px solid #f1f3f5; }
+        th { background: #2c3e50; color: white; font-size: 0.7rem; text-transform: uppercase; }
+        
+        .topic-cell { text-align: left; cursor: pointer; font-weight: bold; color: #2c3e50; }
         .bg-green { background-color: var(--green-easy) !important; }
         .bg-yellow { background-color: var(--yellow-med) !important; }
         .bg-red { background-color: var(--red-hard) !important; }
 
-        /* --- MOBILE CARD LAYOUT --- */
+        .sub-row { display: none; background: #fafafa; }
+        .show-sub { display: table-row !important; }
+        .sub-list { list-style: none; padding: 15px; margin: 0; text-align: left; }
+        .sub-list label { display: flex; align-items: center; cursor: pointer; font-size: 0.9rem; margin-bottom: 8px; }
+        .sub-list input { margin-right: 10px; transform: scale(1.2); }
+
+        input.read-locked { opacity: 0.2; cursor: not-allowed !important; filter: grayscale(1); }
+
+        .reset-container { text-align: center; margin: 40px 0; }
+        .reset-btn { background: #e74c3c; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; opacity: 0.6; }
+
+        #evo-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 3000; flex-direction: column;
+            align-items: center; justify-content: center; color: white; text-align: center;
+        }
+
         @media (max-width: 768px) {
             table, thead, tbody, th, td, tr { display: block; }
-            thead tr { display: none; }
-            
-            tr.main-row {
-                margin-bottom: 15px;
-                border: 1px solid #dee2e6;
-                border-radius: 8px;
-                background: white;
-                padding: 10px;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            }
-
-            td {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                border: none;
-                border-bottom: 1px solid #f1f3f5;
-                padding: 10px 0;
-                text-align: right;
-            }
-            td:last-child { border-bottom: none; }
-            
-            td:before {
-                content: attr(data-label);
-                font-weight: 600;
-                color: #6c757d;
-                flex-basis: 40%;
-                text-align: left;
-            }
-            
-            td.topic-cell {
-                justify-content: flex-start;
-                font-size: 1.1em;
-                color: var(--primary-dark);
-                border-bottom: 2px solid var(--primary-dark);
-                padding-bottom: 10px;
-                margin-bottom: 5px;
-            }
+            thead { display: none; }
+            tr.main-row { border-bottom: 2px solid #eee; padding: 5px 0; }
+            td { display: flex; justify-content: space-between; padding: 10px; align-items: center; }
+            td:before { content: attr(data-label); font-weight: bold; color: #999; font-size: 0.75rem; }
             td.topic-cell:before { display: none; }
-            input[type="text"] { width: 60%; }
-
-            /* Sub-row Mobile overrides */
-            .sub-row.show-sub { 
-                display: block !important; 
-                margin-top: -16px; 
-                margin-bottom: 15px;
-                border: 1px solid #dee2e6;
-                border-top: none;
-                border-radius: 0 0 8px 8px;
-                padding: 0 10px;
-                background-color: #f8f9fa;
-            }
-            td.sub-cell { display: block; padding: 15px 5px; }
-            td.sub-cell:before { display: none; }
+            .sub-row.show-sub { display: block !important; }
         }
     </style>
 </head>
 <body>
 
-    <h1 style="text-align:center; color: #2c3e50; font-size: 1.8rem;">Semester 4 Tracker</h1>
+    <div class="profile-trigger" onclick="toggleTrainerCard()">
+        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png" alt="Ash">
+    </div>
 
+    <div id="trainer-card-overlay" onclick="toggleTrainerCard()">
+        <div class="trainer-card" onclick="event.stopPropagation()">
+            <div class="trainer-header">
+                <div class="ash-photo">
+                    <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png" alt="Ash">
+                </div>
+                <div>
+                    <h3 style="margin:0; letter-spacing:1px;">ISHAN DOBHAL</h3>
+                    <p style="margin:2px 0; font-size:0.8em; opacity:0.9;">LLB (SEM 4)</p>
+                </div>
+            </div>
+            <div class="party-grid" id="trainer-party-grid"></div>
+            <p style="font-size: 10px; text-align: center; margin-top: 15px; opacity: 0.8;">Tap Pokémon to view stats.</p>
+        </div>
+    </div>
+
+    <div id="evo-overlay">
+        <div class="evo-card" style="background:white; color:#333; padding:25px; border-radius:20px; width:80%;">
+            <h2 id="evo-title">Evolution!</h2>
+            <img id="evo-gif" src="" style="width:100px;">
+            <p id="evo-msg"></p>
+            <p id="evo-remind" style="font-weight:bold; color:#e67e22;"></p>
+            <button onclick="closeEvo()" style="padding:10px 20px; background:#27ae60; color:white; border:none; border-radius:5px;">Continue</button>
+        </div>
+    </div>
+
+    <h1 style="text-align:center; margin-top:10px;">Poke-LLB Tracker</h1>
+    
     <div class="header-actions">
-        <button class="header-btn export-btn" onclick="exportJSON()">⬇ Export Backup</button>
-        <button class="header-btn import-btn" onclick="document.getElementById('import-file').click()">⬆ Import Backup</button>
+        <button class="action-btn export-btn" onclick="exportJSON()">Export JSON</button>
+        <button class="action-btn import-btn" onclick="document.getElementById('import-file').click()">Import JSON</button>
         <input type="file" id="import-file" style="display: none;" accept=".json" onchange="importJSON(event)">
     </div>
 
-    <h2>Company Law</h2>
-    <table id="company-law">
-        <thead><tr><th>Main Topic</th><th>Read</th><th>Case</th><th>Rev</th><th>Diff</th><th>Remarks</th><th>Action</th></tr></thead>
-        <tbody></tbody>
-    </table>
+    <div id="app-container"></div>
 
-    <h2>Labour & Industrial Law</h2>
-    <table id="labour-law">
-        <thead><tr><th>Main Topic</th><th>Read</th><th>Case</th><th>Rev</th><th>Diff</th><th>Remarks</th><th>Action</th></tr></thead>
-        <tbody></tbody>
-    </table>
-
-    <h2>Environment Law</h2>
-    <table id="environment-law">
-        <thead><tr><th>Main Topic</th><th>Read</th><th>Case</th><th>Rev</th><th>Diff</th><th>Remarks</th><th>Action</th></tr></thead>
-        <tbody></tbody>
-    </table>
-
-    <h2>Criminology & Penology</h2>
-    <table id="criminology">
-        <thead><tr><th>Main Topic</th><th>Read</th><th>Case</th><th>Rev</th><th>Diff</th><th>Remarks</th><th>Action</th></tr></thead>
-        <tbody></tbody>
-    </table>
-
-    <h2>Arbitration & Conciliation</h2>
-    <table id="arbitration">
-        <thead><tr><th>Main Topic</th><th>Read</th><th>Case</th><th>Rev</th><th>Diff</th><th>Remarks</th><th>Action</th></tr></thead>
-        <tbody></tbody>
-    </table>
+    <div class="reset-container">
+        <button class="reset-btn" onclick="resetAll()">Reset All Progress</button>
+    </div>
 
     <script>
         const subjectsData = {
-            'company-law': [
-                { title: 'Unit 1: Formation', subs: ['Meaning & Nature of Company', 'Incorporation Process', 'Memorandum & Articles of Association'] },
-                { title: 'Unit 2: Corporate Capital', subs: ['Prospectus', 'Shares & Share Capital', 'Dividends', 'Debentures'] },
-                { title: 'Unit 3: Management', subs: ['Directors: Appointment & Duties', 'Meetings: Types & Procedure', 'Prevention of Oppression & Mismanagement'] },
-                { title: 'Unit 4: Winding Up', subs: ['Modes of Winding Up', 'Liquidator Powers', 'Consequences of Winding Up'] }
-            ],
-            'labour-law': [
-                { title: 'Unit 1: Evolution', subs: ['Historical Development', 'Constitutional Perspectives of Labour Laws'] },
-                { title: 'Unit 2: ID Act 1947', subs: ['Industry & Industrial Dispute Definitions', 'Workmen under ID Act', 'Strikes & Lockouts', 'Retrenchment & Closure'] },
-                { title: 'Unit 3: Trade Unions', subs: ['Registration of Trade Unions', 'Rights & Liabilities', 'Immunities of Registered Trade Unions'] },
-                { title: 'Unit 4: Wages', subs: ['Minimum Wages Act 1948', 'Payment of Wages Act 1936'] }
-            ],
-            'environment-law': [
-                { title: 'Unit 1: Intro to Environment Law', subs: ['Meaning & Concept', 'Environment Protection Act 1986', 'Constitutional Provisions'] },
-                { title: 'Unit 2: Protection Laws', subs: ['Water Act', 'Air Act', 'Wildlife Protection Act 1972'] },
-                { title: 'Unit 3: International Environmental Law', subs: ['Stockholm Declaration', 'Rio Declaration', 'Kyoto Protocol'] },
-                { title: 'Unit 4: Emerging Issues', subs: ['Climate Change', 'E-Waste Management', 'National Green Tribunal (NGT) Act'] }
-            ],
-            'criminology': [
-                { title: 'Unit 1: Basics of Criminology', subs: ['Concept, Nature & Scope', 'Crime & Morality', 'Criminology vs. Criminal Law'] },
-                { title: 'Unit 2: Schools of Criminology', subs: ['Classical School', 'Positivist School', 'Sociological School'] },
-                { title: 'Unit 3: Penology', subs: ['Theories of Punishment', 'Capital Punishment', 'Prison Reforms'] },
-                { title: 'Unit 4: Victimology', subs: ['Concept of Victimology', 'Rights of Victims', 'Victim Compensation Schemes'] }
-            ],
-            'arbitration': [
-                { title: 'Unit 1: General Provisions', subs: ['Definitions & Scope', 'Arbitration Agreement'] },
-                { title: 'Unit 2: Arbitral Tribunal', subs: ['Composition of Tribunal', 'Jurisdiction', 'Conduct of Arbitral Proceedings'] },
-                { title: 'Unit 3: Award', subs: ['Making of Arbitral Award', 'Recourse against Award', 'Enforcement of Award'] },
-                { title: 'Unit 4: Conciliation', subs: ['Appointment of Conciliators', 'Procedure', 'Settlement Agreement'] },
-                { title: 'Unit 5: File Status', subs: [
-                    'Case 1', 'Case 2', 'Case 3', 'Case 4', 'Case 5', 
-                    'Case 6', 'Case 7', 'Case 8', 'Case 9', 'Case 10',
-                    'Question 1', 'Question 2', 'Question 3', 'Question 4', 'Question 5'
-                ] }
-            ]
+            'company-law': { title: 'Company Law', type: 'fire', pokemon: ['charmander', 'charmeleon', 'charizard', 'charizard-megax'], units: [
+                { title: 'Unit 1: Formation', subs: ['Meaning & Nature', 'Incorporation', 'MOA & AOA'] },
+                { title: 'Unit 2: Corporate Capital', subs: ['Prospectus', 'Shares', 'Dividends'] },
+                { title: 'Unit 3: Management', subs: ['Directors', 'Meetings', 'Oppression'] },
+                { title: 'Unit 4: Winding Up', subs: ['Modes', 'Liquidators', 'Consequences'] }
+            ]},
+            'labour-law': { title: 'Labour Law', type: 'fighting', pokemon: ['riolu', 'riolu', 'lucario', 'lucario-mega'], units: [
+                { title: 'Unit 1: Evolution', subs: ['History', 'Constitution'] },
+                { title: 'Unit 2: ID Act', subs: ['Industry Def', 'Strikes', 'Retrenchment'] },
+                { title: 'Unit 3: Trade Unions', subs: ['Registration', 'Rights'] },
+                { title: 'Unit 4: Wages', subs: ['Min Wages', 'Payment Act'] }
+            ]},
+            'environment-law': { title: 'Environment Law', type: 'dragon', pokemon: ['gible', 'gabite', 'garchomp', 'garchomp-mega'], units: [
+                { title: 'Unit 1: Introduction', subs: ['Concept', 'EPA 1986', 'Constitution'] },
+                { title: 'Unit 2: Specific Acts', subs: ['Water Act', 'Air Act', 'Wildlife Act'] },
+                { title: 'Unit 3: International', subs: ['Stockholm', 'Rio', 'Kyoto'] },
+                { title: 'Unit 4: Emerging', subs: ['Climate Change', 'E-Waste', 'NGT Act'] }
+            ]},
+            'criminology': { title: 'Criminology', type: 'dark', pokemon: ['zorua', 'zorua', 'zoroark', 'zoroark-hisui'], units: [
+                { title: 'Unit 1: Basics', subs: ['Nature/Scope', 'Crime/Morality'] },
+                { title: 'Unit 2: Schools', subs: ['Classical', 'Positivist', 'Sociological'] },
+                { title: 'Unit 3: Penology', subs: ['Theories', 'Capital Punishment', 'Prison Reforms'] },
+                { title: 'Unit 4: Victimology', subs: ['Concept', 'Rights', 'Compensation'] }
+            ]},
+            'arbitration': { title: 'Arbitration', type: 'steel', pokemon: ['scyther', 'scyther', 'scizor', 'scizor-mega', 'shiny-scizor-mega'], units: [
+                { title: 'Unit 1: Agreement', subs: ['Definitions', 'Agreement Scope'] },
+                { title: 'Unit 2: Tribunal', subs: ['Composition', 'Jurisdiction'] },
+                { title: 'Unit 3: Awards', subs: ['Making Awards', 'Enforcement'] },
+                { title: 'Unit 4: Conciliation', subs: ['Conciliators', 'Procedure'] },
+                { title: 'Unit 5: File Status', subs: ['Case 1-5', 'Case 6-10', 'Questions 1-5'] }
+            ]}
         };
 
-        function renderTables() {
-            for (const [tableId, units] of Object.entries(subjectsData)) {
-                const tbody = document.querySelector(`#${tableId} tbody`);
-                if (!tbody) continue;
-
-                units.forEach((unitObj, index) => {
-                    const rowId = `${tableId}-u${index}`;
-                    
-                    const trMain = document.createElement('tr');
-                    trMain.className = 'main-row';
-                    trMain.innerHTML = `
-                        <td class="topic-cell" data-label="Topic" data-rowid="${rowId}">
-                            <span id="${rowId}-icon" class="toggle-icon">▶</span> ${unitObj.title}
-                        </td>
-                        <td data-label="Read"><input type="checkbox" id="${rowId}-read" onchange="saveData()"></td>
-                        <td data-label="Case"><input type="checkbox" id="${rowId}-case" onchange="saveData()"></td>
-                        <td data-label="Rev"><input type="checkbox" id="${rowId}-rev" onchange="saveData()"></td>
+        function renderApp() {
+            const container = document.getElementById('app-container');
+            container.innerHTML = ''; 
+            for (const [subjKey, subjData] of Object.entries(subjectsData)) {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'subject-container';
+                wrapper.innerHTML = `
+                    <div class="pokemon-header type-${subjData.type}">
+                        <div class="sprite-box"><img id="img-${subjKey}" src=""></div>
+                        <div style="flex-grow:1">
+                            <h2 style="margin:0; font-size:1.1rem;">${subjData.title}</h2>
+                            <div style="display:flex; justify-content:space-between; font-size:0.75rem; font-weight:bold;">
+                                <span id="name-${subjKey}">-</span>
+                                <span id="status-${subjKey}">0/0 Units</span>
+                            </div>
+                            <div class="xp-container"><div class="xp-bar" id="xp-${subjKey}"></div></div>
+                        </div>
+                    </div>
+                    <table id="${subjKey}"><thead><tr><th>Topic</th><th>Read</th><th>Case</th><th>Rev</th><th>Diff</th></tr></thead><tbody></tbody></table>
+                `;
+                const tbody = wrapper.querySelector('tbody');
+                subjData.units.forEach((u, i) => {
+                    const rId = `${subjKey}-u${i}`;
+                    const tr = document.createElement('tr');
+                    tr.className = 'main-row';
+                    tr.innerHTML = `
+                        <td class="topic-cell" onclick="toggleSub('${rId}')">▶ ${u.title}</td>
+                        <td data-label="Read"><input type="checkbox" id="${rId}-read" class="read-locked" disabled onchange="handleRead('${subjKey}', ${i})"></td>
+                        <td data-label="Case"><input type="checkbox" id="${rId}-case" onchange="saveData()"></td>
+                        <td data-label="Rev"><input type="checkbox" id="${rId}-rev" onchange="saveData()"></td>
                         <td data-label="Diff">
-                            <select id="${rowId}-diff" onchange="updateColor(this); saveData()">
-                                <option value="-">-</option>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
+                            <select id="${rId}-diff" onchange="updateRowColor(this); saveData()">
+                                <option value="-">-</option><option value="1">1</option><option value="2">2</option><option value="3">3</option>
                             </select>
                         </td>
-                        <td data-label="Remarks"><input type="text" id="${rowId}-remarks" placeholder="..." oninput="saveData()"></td>
-                        <td data-label="Action"><button class="sync-btn" onclick="syncCalendar('${unitObj.title}')">Sync</button></td>
                     `;
-                    tbody.appendChild(trMain);
-
-                    const trSub = document.createElement('tr');
-                    trSub.id = `${rowId}-sub`;
-                    trSub.className = 'sub-row';
-                    
-                    let subHtml = `<td colspan="7" class="sub-cell"><ul class="sub-list">`;
-                    unitObj.subs.forEach((sub, sIndex) => {
-                        const subId = `${rowId}-s${sIndex}`;
-                        subHtml += `
-                            <li>
-                                <label>
-                                    <input type="checkbox" id="${subId}" onchange="saveData()">
-                                    ${sub}
-                                </label>
-                            </li>`;
-                    });
-                    subHtml += `</ul></td>`;
-                    
-                    trSub.innerHTML = subHtml;
-                    tbody.appendChild(trSub);
+                    tbody.appendChild(tr);
+                    const subTr = document.createElement('tr');
+                    subTr.id = `${rId}-sub`; subTr.className = 'sub-row';
+                    let sHtml = `<td colspan="5"><ul class="sub-list">`;
+                    u.subs.forEach((s, si) => { sHtml += `<li><label><input type="checkbox" id="${rId}-s${si}" onchange="checkLocks('${subjKey}'); saveData()"> ${s}</label></li>`; });
+                    subTr.innerHTML = sHtml + `</ul></td>`;
+                    tbody.appendChild(subTr);
                 });
+                container.appendChild(wrapper);
             }
         }
 
-        // Bulletproof Event Delegation for Accordion
-        document.addEventListener('click', function(e) {
-            const topicCell = e.target.closest('.topic-cell');
-            if (topicCell) {
-                const rowId = topicCell.getAttribute('data-rowid');
-                const subRow = document.getElementById(`${rowId}-sub`);
-                const icon = document.getElementById(`${rowId}-icon`);
-                
-                if (subRow && icon) {
-                    subRow.classList.toggle('show-sub');
-                    icon.innerText = subRow.classList.contains('show-sub') ? '▼' : '▶';
+        function toggleSub(id) { document.getElementById(`${id}-sub`).classList.toggle('show-sub'); }
+        function toggleTrainerCard() { 
+            const el = document.getElementById('trainer-card-overlay');
+            el.style.display = (el.style.display === 'flex') ? 'none' : 'flex';
+            if(el.style.display === 'flex') updateTrainerStats();
+        }
+
+        function updateRowColor(select) {
+            const row = select.closest('tr');
+            row.classList.remove('bg-green', 'bg-yellow', 'bg-red');
+            if (select.value === '1') row.classList.add('bg-green');
+            else if (select.value === '2') row.classList.add('bg-yellow');
+            else if (select.value === '3') row.classList.add('bg-red');
+        }
+
+        function checkLocks(subjKey) {
+            subjectsData[subjKey].units.forEach((u, i) => {
+                const rId = `${subjKey}-u${i}`;
+                const subs = document.querySelectorAll(`input[id^="${rId}-s"]`);
+                const allDone = Array.from(subs).every(s => s.checked);
+                const readBtn = document.getElementById(`${rId}-read`);
+                if(readBtn) {
+                    readBtn.disabled = !allDone;
+                    readBtn.classList.toggle('read-locked', !allDone);
                 }
-            }
-        });
-
-        function updateColor(selectElement) {
-            const row = selectElement.closest('tr.main-row');
-            if(row) {
-                row.classList.remove('bg-green', 'bg-yellow', 'bg-red');
-                const val = selectElement.value;
-                if (val === '1') row.classList.add('bg-green');
-                else if (val === '2') row.classList.add('bg-yellow');
-                else if (val === '3') row.classList.add('bg-red');
-            }
+            });
         }
+
+        function handleRead(subjKey, unitIdx) {
+            if (document.getElementById(`${subjKey}-u${unitIdx}-read`).checked) {
+                let totalCompleted = 0;
+                subjectsData[subjKey].units.forEach((u, i) => {
+                    if(localStorage.getItem(`${subjKey}-u${i}-read`) === 'true' || (subjKey === subjKey && i === unitIdx)) {
+                        totalCompleted++;
+                    }
+                });
+                triggerEvo(subjKey, unitIdx, totalCompleted);
+            }
+            saveData();
+        }
+
+        function triggerEvo(subjKey, idx, totalCompleted) {
+            const subj = subjectsData[subjKey];
+            const pokeKey = subj.pokemon[Math.min(totalCompleted, subj.pokemon.length - 1)];
+            const diff = document.getElementById(`${subjKey}-u${idx}-diff`).value;
+            const times = { '1': 'Next Week', '2': 'In 3 Days', '3': 'Tomorrow', '-': 'TBD' };
+            
+            // Handle shiny sprites
+            let spriteUrl = `https://play.pokemonshowdown.com/sprites/ani/${pokeKey}.gif`;
+            if (pokeKey.startsWith('shiny-')) {
+                spriteUrl = `https://play.pokemonshowdown.com/sprites/ani-shiny/${pokeKey.replace('shiny-', '')}.gif`;
+            }
+
+            document.getElementById('evo-gif').src = spriteUrl;
+            document.getElementById('evo-msg').innerText = `${pokeKey.replace(/-/g, ' ').toUpperCase()} Evolved! (Total Units: ${totalCompleted})`;
+            document.getElementById('evo-remind').innerText = `REVISE: ${times[diff]}`;
+            document.getElementById('evo-overlay').style.display = 'flex';
+        }
+
+        function closeEvo() { document.getElementById('evo-overlay').style.display = 'none'; }
 
         function saveData() {
-            document.querySelectorAll('input[type="checkbox"]').forEach(el => localStorage.setItem(el.id, el.checked));
-            document.querySelectorAll('input[type="text"]').forEach(el => localStorage.setItem(el.id, el.value));
-            document.querySelectorAll('select').forEach(el => localStorage.setItem(el.id, el.value));
+            document.querySelectorAll('input, select').forEach(el => {
+                if(el.type === 'checkbox') localStorage.setItem(el.id, el.checked);
+                else localStorage.setItem(el.id, el.value);
+            });
+            updateUI();
         }
 
-        function loadData() {
-            document.querySelectorAll('input[type="checkbox"]').forEach(el => {
-                const val = localStorage.getItem(el.id);
-                if (val !== null) el.checked = (val === 'true');
-            });
-            document.querySelectorAll('input[type="text"]').forEach(el => {
-                const val = localStorage.getItem(el.id);
-                if (val !== null) el.value = val;
-            });
-            document.querySelectorAll('select').forEach(el => {
-                const val = localStorage.getItem(el.id);
-                if (val !== null) {
-                    el.value = val;
-                    updateColor(el);
-                }
-            });
+        function updateUI() {
+            for (const [subjKey, subjData] of Object.entries(subjectsData)) {
+                let reads = 0; let totalSubs = 0; let checkedSubs = 0;
+                subjData.units.forEach((u, i) => {
+                    if(localStorage.getItem(`${subjKey}-u${i}-read`) === 'true') reads++;
+                    u.subs.forEach((s, si) => { totalSubs++; if(localStorage.getItem(`${subjKey}-u${i}-s${si}`) === 'true') checkedSubs++; });
+                });
+                const xp = ((checkedSubs * 5) + (reads * 30)) / ((totalSubs * 5) + (subjData.units.length * 30)) * 100;
+                document.getElementById(`xp-${subjKey}`).style.width = xp + '%';
+                const pKey = subjData.pokemon[Math.min(reads, subjData.pokemon.length - 1)];
+                document.getElementById(`name-${subjKey}`).innerText = pKey.replace(/-/g, ' ').toUpperCase();
+                
+                let sUrl = `https://play.pokemonshowdown.com/sprites/ani/${pKey}.gif`;
+                if (pKey.startsWith('shiny-')) sUrl = `https://play.pokemonshowdown.com/sprites/ani-shiny/${pKey.replace('shiny-', '')}.gif`;
+                document.getElementById(`img-${subjKey}`).src = sUrl;
+                
+                document.getElementById(`status-${subjKey}`).innerText = `${reads}/${subjData.units.length} Units`;
+                checkLocks(subjKey);
+            }
         }
 
-        // --- NEW: Export JSON Logic ---
+        function updateTrainerStats() {
+            const grid = document.getElementById('trainer-party-grid');
+            grid.innerHTML = '';
+            for (const [subjKey, subjData] of Object.entries(subjectsData)) {
+                let reads = 0;
+                subjData.units.forEach((u, i) => { if(localStorage.getItem(`${subjKey}-u${i}-read`) === 'true') reads++; });
+                const pKey = subjData.pokemon[Math.min(reads, subjData.pokemon.length - 1)];
+                let sUrl = `https://play.pokemonshowdown.com/sprites/ani/${pKey}.gif`;
+                if (pKey.startsWith('shiny-')) sUrl = `https://play.pokemonshowdown.com/sprites/ani-shiny/${pKey.replace('shiny-', '')}.gif`;
+                
+                grid.innerHTML += `
+                    <div class="party-member" onclick="alert('${subjData.title}: ${reads} units completed')" title="Units Completed: ${reads}">
+                        <img src="${sUrl}">
+                        <span style="display:block; font-weight:bold;">Lv. ${reads + 1}</span>
+                        <span>${pKey.replace(/-/g, ' ').toUpperCase()}</span>
+                    </div>`;
+            }
+        }
+
         function exportJSON() {
             const data = {};
-            document.querySelectorAll('input[type="checkbox"]').forEach(el => data[el.id] = el.checked);
-            document.querySelectorAll('input[type="text"]').forEach(el => data[el.id] = el.value);
-            document.querySelectorAll('select').forEach(el => data[el.id] = el.value);
-
-            const dataStr = JSON.stringify(data, null, 2);
-            const blob = new Blob([dataStr], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            
+            document.querySelectorAll('input, select').forEach(el => data[el.id] = (el.type === 'checkbox' ? el.checked : el.value));
             const a = document.createElement('a');
-            a.href = url;
-            a.download = "semester4_tracker_backup.json";
-            document.body.appendChild(a);
+            a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }));
+            a.download = "llb_poke_backup.json";
             a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
         }
 
-        // --- NEW: Import JSON Logic ---
-        function importJSON(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
+        function importJSON(e) {
             const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    // Write imported data to localStorage
-                    for (const [key, value] of Object.entries(data)) {
-                        localStorage.setItem(key, value);
-                    }
-                    // Refresh the visuals
-                    loadData();
-                    alert("Backup imported successfully!");
-                } catch (error) {
-                    alert("Error importing file. Make sure it is a valid .json backup.");
-                }
+            reader.onload = (f) => {
+                const data = JSON.parse(f.target.result);
+                for (const [k, v] of Object.entries(data)) localStorage.setItem(k, v);
+                location.reload();
             };
-            reader.readAsText(file);
+            reader.readAsText(e.target.files[0]);
         }
 
-        function syncCalendar(unitName) {
-            alert(`Syncing ${unitName} revision schedule to Google Calendar...`);
-        }
+        function resetAll() { if(confirm("Wipe all progress?")) { localStorage.clear(); location.reload(); } }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            renderTables();
-            loadData();
-        });
+        document.addEventListener('DOMContentLoaded', () => { renderApp(); loadData(); });
+
+        function loadData() {
+            document.querySelectorAll('input, select').forEach(el => {
+                const val = localStorage.getItem(el.id);
+                if (val !== null) {
+                    if(el.type === 'checkbox') el.checked = (val === 'true');
+                    else el.value = val;
+                    if (el.tagName === 'SELECT' && el.id.includes('-diff')) updateRowColor(el);
+                }
+            });
+            updateUI();
+        }
     </script>
 </body>
 </html>
